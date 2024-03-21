@@ -24,6 +24,7 @@ class HomeController extends Controller
     public function index()
     {
         $posts = Post::orderBy('created_at', 'desc')->paginate(20);
+
         return view('posts.index', compact('posts'));
     }
 }

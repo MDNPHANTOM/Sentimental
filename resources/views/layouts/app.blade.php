@@ -32,11 +32,11 @@
             </div>
             <div class="main-frame427320722">
                 <div class="main-frame427320728">
-                    <a class="main-text23">Sentimental</a>
+                    <a href="/posts" class="main-text23">Sentimental</a>
                     <div class="main-frame427320727">
-                        <a class="main-text23">Explore</a>
-                        <a class="main-text24">My Groups</a>
-                        <a class="main-text25">Notifications</a>
+                        <a class="main-text23">My Friends</a>
+                        <a class="main-text24">My Likes</a>
+                        <a class="main-text25">My Interactions</a>
                     </div>
                 </div>
                 <div class="main-frame427320726">

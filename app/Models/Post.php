@@ -15,6 +15,7 @@ class Post extends Model
     protected $fillable = [
         'text',
         'user_id',
+
     
     ];
     public function user()
@@ -25,6 +26,15 @@ class Post extends Model
     public function comments()
     {
     return $this->hasMany(Comment::class);
+    }
+    public function likedBy($user)
+    {
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
+
+    public function likes()
+    {
+        return $this->belongsToMany(User::class, 'post_like')->withTimestamps();
     }
 
 }

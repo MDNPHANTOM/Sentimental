@@ -11,7 +11,7 @@ use App\Models\Comment;
 class Comment extends Model
 {
     protected $fillable = [
-        'text',
+        'commment_text',
         'post_id',
         'user_id',
     ];

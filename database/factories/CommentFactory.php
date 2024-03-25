@@ -17,7 +17,7 @@ class CommentFactory extends Factory
         return [
             'user_id' => $this->faker->randomElement($userIds),
             'post_id' => $this->faker->randomElement($postIds),
-            'text' => $this->faker->sentence,
+            'commment_text' => $this->faker->sentence,
         ];
     }
 }

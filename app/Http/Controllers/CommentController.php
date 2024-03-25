@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Models\User;
 use App\Models\Post;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
     public function index()
-    { }
+    {
+        $Comments = Comment::orderBy('created_at', 'desc')->paginate(20);
+     }
     
 
     /**
@@ -31,18 +34,16 @@ class CommentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request,Post $post){
-        if(Auth::user()){
             $request->validate([
-            'text' => 'required']);
+            'commment_text' => 'required']);
 
             $comment = new Comment;
-            $comment->user()->associate(Auth::user());
+            $comment->user_id = Auth()->user()->id;
             $comment->post_id = $request->input('post_id');
-            $comment->text = $request->text;
+            $comment->commment_text = $request->commment_text;
             $comment->save();
             return redirect()->back()->with('success', 'New Comment Added.');
-        }
-        else{return abort(401);}
+
         }
 
     /**

@@ -25,7 +25,7 @@ class PostController extends Controller
 
     public function edit(Post $post) {
         
-        return view('post.edit', [
+        return view('posts.edit', [
         'post' => $post
         ]);
         }
@@ -50,13 +50,14 @@ class PostController extends Controller
         $post->updated_at = now();
         $post->save();
     
-        return redirect()->back()->with('success', 'New Post Added.');
+        return redirect()->route('posts.index')->with('success', 'Update Successfull');
     }
     
     public function update(Request $request, Post $post) {
         $request->validate([
             'text' => 'required',
             ]);
+        $post->user_id = Auth()->user()->id;
         $post->text = $request->text;
         $post->updated_at = now();
         $post->save();
@@ -66,7 +67,7 @@ class PostController extends Controller
     
     public function destroy(Post $post) {
         $post->delete();
-        return redirect()->route('post.index')->with('success', 'Post deleted successfully');
+        return redirect()->route('posts.index')->with('success', 'Post deleted successfully');
         }
 
     

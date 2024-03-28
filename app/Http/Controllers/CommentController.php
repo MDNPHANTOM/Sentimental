@@ -74,12 +74,12 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment) {
         $request->validate([
-            'text' => 'required']);
+            'commment_text' => 'required']);
 
-        $comment->user()->associate(Auth::user());
-        $comment->text = $request->text;
+        $comment->user_id = Auth()->user()->id;
+        $comment->commment_text = $request->commment_text;
         $comment->save();
-        return redirect()->route('games.index')->with('success', 'Update Successfull');
+        return redirect()->route('posts.show', $comment->post_id)->with('success', 'Update Successfull');
         
     }
 

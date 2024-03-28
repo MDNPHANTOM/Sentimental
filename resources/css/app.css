@@ -303,6 +303,13 @@
   font-stretch: normal;
   text-decoration: none;
 }
+.admin-frame427320730 {
+  gap: 226px;
+  display: flex;
+  align-items: flex-start;
+  
+}
+
 .main-react {
   width: 559px;
   height: 60px;
@@ -543,3 +550,25 @@ text-decoration: none;
 cursor: pointer;
 }
 
+.admin-concern2 {
+  width: 37px;
+  height: 37px;
+  border-color: rgba(254, 0, 0, 1);
+  border-style: solid;
+  border-width: 1px;
+}
+.admin-blockuser2 {
+  width: 39px;
+  height: 37px;
+  border-color: rgba(254, 0, 0, 1);
+  border-style: solid;
+  border-width: 1px;
+}
+
+.admin-flag1 {
+  width: 30px;
+  height: 37px;
+  border-color: rgba(254, 0, 0, 1);
+  border-style: solid;
+  border-width: 1px;
+}

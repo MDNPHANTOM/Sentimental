@@ -2,12 +2,12 @@
 
 @section('content')
 <div class="main-post" >
-    <form class="main-create-post" action="{{ route('posts.update', $post->id) }}" method="POST">
+    <form class="main-create-post" action="{{ route('comments.update', $comment->id) }}" method="POST">
         @csrf
         @method('PUT')
         <a href="/profile" class="main-text32">{{Auth::user()->name}}</a>
-        <textarea name="text" class="main-create-post-text @error('text') is-invalid @enderror" id="text" type="text" required>{{ old('text', $post->text) }}</textarea>
-        @error('text')
+        <textarea name="commment_text" class="main-create-post-text @error('commment_text') is-invalid @enderror" id="commment_text" type="text" required>{{ old('commment_text', $comment->commment_text) }}</textarea>
+        @error('comment_text')
             <div class="alert alert-danger">{{ $message }}</div>
         @enderror
         <div class="main-create-post-frame1">

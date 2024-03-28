@@ -27,12 +27,6 @@
         <div class="main-react">
         <a>
         <img
-            alt="likebutton161993113866172014"
-            src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/7174dfe3-8544-4c6c-875e-d0aec2ab361e?org_if_sml=15703&amp;force_format=original"
-            class="main-likebutton16199311386617"
-        /></a>
-        <a>
-        <img
             alt="save12015"
             src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/468f9d8e-41ac-479b-bd56-c5ebe3902f6a?org_if_sml=11373&amp;force_format=original"
             class="main-save1"
@@ -47,3 +41,4 @@
         </div>
     </div>
 </div>
+@endsection

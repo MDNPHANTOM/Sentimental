@@ -12,26 +12,32 @@
                     <span class="main-text04">4 Dec 2020</span>
                     @if ($post->user_id === Auth::user()->id)
                         <div class="rem-element">
-                            <button id="removeFriendButton" >Edit Comment</button>
-                            <button id="removeFriendButton" >Delete Comment</button>
+                            <form  id="removeFriendButton" action="{{ route('posts.destroy', $post->id) }}" method="POST">
+                            <a href="{{ route('posts.edit', $post->id) }}"><button type="button">Edit Post</button></a>
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit">Delete Post</button>
+                            </form>
                         </div>
                     @endif
                 </div>
                 <span class="main-text06">{{ $post->text }}</span>
             </div>
             <div class="main-react">
-                <a>
-                <img
-                alt="likebutton161993113866172014"
-                src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/7174dfe3-8544-4c6c-875e-d0aec2ab361e?org_if_sml=15703&amp;force_format=original"
-                class="main-likebutton16199311386617"
-                /></a>
-                <a href="#" data-toggle="modal" data-target="ModalCreate">
-                <img
-                alt="comment2014"
-                src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/e8d7d336-b592-43ee-941a-5fdcd5a782e0?org_if_sml=1589&amp;force_format=original"
-                class="main-comment"
-                /></a>
+                <form id="likeForm" action="{{ $post->likedBy(auth()->user()) ? route('posts.unlike', $post) : route('posts.like', $post) }}" method="POST">
+                    @csrf
+                    @if($post->likedBy(auth()->user()))
+                        @method('DELETE')
+                    @endif
+                    <button type="submit" style="background: none; border: none;">
+                        <img
+                            alt="likebutton161993113866172014"
+                            src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/7174dfe3-8544-4c6c-875e-d0aec2ab361e?org_if_sml=15703&amp;force_format=original"
+                            class="main-likebutton16199311386617"
+                        />
+                        <span>{{ $post->likes()->count() }}</span>
+                    </button>
+                </form>
                 <a>
                 <img
                 alt="save12015"
@@ -71,17 +77,20 @@
         @foreach ($comments as $comment)
             @if ($post->id === $comment->post_id)
                 <div class="main-info">
-                    <a href="{{ route('comments.show', $comment->id) }}" role="link">
                     <div class="main-frame427320725">
                         <div class="main-post-info">
                             <span class="main-text">{{ $comment->user->name }}</span>
                             <span class="main-text02">---</span>
                             <span class="main-text04">4 Dec 2020</span>
                             @if ($comment->user_id === Auth::user()->id)
-                                <div class="rem-element">
-                                    <button id="removeFriendButton" >Edit Comment</button>
-                                    <button id="removeFriendButton" >Delete Comment</button>
-                                </div>
+                            <div class="rem-element">
+                                <form  id="removeFriendButton" action="{{ route('comments.destroy', $comment->id) }}" method="POST">
+                                    <a href="{{ route('comments.edit', $comment->id) }}"><button type="button">Edit Comment</button></a>
+                                    @csrf
+                                    @method('DELETE')
+                                <button type="submit">Delete Comment</button>
+                            </form>
+                        </div>
                             @endif
                         </div>
                         <form id="editForm_{{ $comment->id }}" style="display: none;">
@@ -91,15 +100,9 @@
                         </form>
                         <span class="main-text06" id="commentText_{{ $comment->id }}">{{ $comment->commment_text }}</span>
                     </div>
-                    </a>
                     <div class="main-react">
-                    <a>
-                    <img
-                        alt="likebutton161993113866172014"
-                        src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/7174dfe3-8544-4c6c-875e-d0aec2ab361e?org_if_sml=15703&amp;force_format=original"
-                        class="main-likebutton16199311386617"
-                    /></a>
-                    <a href="{{ route('posts.show', $post->id) }}" role="link">
+
+                    <a href="{{ route('comments.show', $comment->id) }}" role="link">
                     <img
                         alt="comment2014"
                         src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/e8d7d336-b592-43ee-941a-5fdcd5a782e0?org_if_sml=1589&amp;force_format=original"

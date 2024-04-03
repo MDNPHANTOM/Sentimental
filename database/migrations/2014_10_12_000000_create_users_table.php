@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->unsignedInteger('Support_Tier')->default(0);
+            $table->unsignedInteger('isAdmin')->default(0);
+            $table->unsignedInteger('support_tier')->default(0);
+            $table->unsignedInteger('blocked')->default(0);
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

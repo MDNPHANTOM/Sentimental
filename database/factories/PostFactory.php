@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Faker\Factory as faker;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 /**
@@ -22,6 +23,7 @@ class PostFactory extends Factory
             'user_id' => $this->faker->randomElement($userIds),
             'text' => $this->faker->paragraph,
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'concern' => $this->faker->randomElement([0, 1]),
         ];
     }
 }

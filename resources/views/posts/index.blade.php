@@ -46,12 +46,12 @@
                 <span class="main-text">{{ $post->user->name }}</span>
                 <span class="main-text02">---</span>
                 <span class="main-text04">4 Dec 2020</span>
-                @if (Auth::user('Admin'))
-                <span class="main-text04">Concern: 5%</span>
+                @if (Auth::user()->isAdmin == 1)
+                <span class="main-text04">Concern: {{$post->concern}}</span>
                 @endif
                 @if ($post->user_id === Auth::user()->id)
                     <div class="rem-element">
-                        <form  id="removeFriendButton" action="{{ route('posts.destroy', $post->id) }}" method="POST">
+                        <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
                           <a href="{{ route('posts.edit', $post->id) }}"><button type="button">Edit Post</button></a>
                           @csrf
                           @method('DELETE')
@@ -62,36 +62,36 @@
               </div>
               <span class="main-text06">{{ $post->text }}</span>
             </div>
-          <div class="main-react">
-            <form id="likeForm" action="{{ $post->likedBy(auth()->user()) ? route('posts.unlike', $post) : route('posts.like', $post) }}" method="POST">
-                @csrf
-                @if($post->likedBy(auth()->user()))
-                    @method('DELETE')
-                @endif
-                <button type="submit" style="background: none; border: none;">
-                    <img
-                        alt="likebutton161993113866172014"
-                        src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/7174dfe3-8544-4c6c-875e-d0aec2ab361e?org_if_sml=15703&amp;force_format=original"
-                        class="main-likebutton16199311386617"
-                    />
-                    <span>{{ $post->likes()->count() }}</span>
-                </button>
-            </form>
-            <a href="{{ route('posts.show', $post->id) }}" role="link">
+            <div class="main-react">
+              <form id="likeForm" action="{{ $post->likedBy(auth()->user()) ? route('posts.unlike', $post) : route('posts.like', $post) }}" method="POST">
+                  @csrf
+                  @if($post->likedBy(auth()->user()))
+                      @method('DELETE')
+                  @endif
+                  <button type="submit" style="background: none; border: none;">
+                      <img
+                          alt="likebutton161993113866172014"
+                          src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/7174dfe3-8544-4c6c-875e-d0aec2ab361e?org_if_sml=15703&amp;force_format=original"
+                          class="main-likebutton16199311386617"
+                      />
+                      <span>{{ $post->likes()->count() }}</span>
+                  </button>
+              </form>
+              <a href="{{ route('posts.show', $post->id) }}" role="link">
               <img
-                alt="comment2014"
-                src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/e8d7d336-b592-43ee-941a-5fdcd5a782e0?org_if_sml=1589&amp;force_format=original"
-                class="main-comment"/></a>
-            <a><img
+                  alt="comment2014"
+                  src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/e8d7d336-b592-43ee-941a-5fdcd5a782e0?org_if_sml=1589&amp;force_format=original"
+                  class="main-comment"/></a>
+              <a><img
               alt="save12015"
               src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/468f9d8e-41ac-479b-bd56-c5ebe3902f6a?org_if_sml=11373&amp;force_format=original"
               class="main-save1"/></a>
-            <a><img
-              alt="IMAGE5449832002014"
-              src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/5d2245cc-19f3-443a-aab3-ede589c81328?org_if_sml=11070&amp;force_format=original"
-              class="main-image544983200"/></a>
+              <a><img
+                  alt="flag12017"
+                  src="/flag12017-9i3-200w.png"
+                  class="main-image544983200"/></a>
           </div>
-        </div>
+          </div>
       @endforeach
       <div class="nextpage">
         {{ $posts->links('pagination::bootstrap-4') }}

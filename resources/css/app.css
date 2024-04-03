@@ -4,8 +4,6 @@
 
 .body {
   background-color: rgba(149, 166, 198, 1);
-  
-  
 }
 .nav-bar {
   top: 0px;
@@ -13,7 +11,7 @@
   height: 40px;
   width: 100%;
   display: flex;
-  padding: 11px 5px;
+  padding: 11px 0px;
   position: fixed;
   flex-wrap: wrap;
   align-items: center;
@@ -21,6 +19,10 @@
   justify-content: space-between;
   background-color: rgb(236, 234, 234);
   border: 1px solid #cdcdcd;
+}
+
+.hidden {
+  display: none;
 }
 .main-container {
     display: flex;
@@ -340,9 +342,9 @@
 }
 
 .main-frame427320728 {
-  gap: 322px;
-  width: 722px;
-  height: 15px;
+  gap: 120px;
+  width: auto;
+  height: 14px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -361,7 +363,7 @@
   text-decoration: none;
 }
 .main-frame427320727 {
-  gap: 180px;
+  gap: 60px;
   width: auto;
   height: 14px;
   display: flex;
@@ -436,10 +438,10 @@ a {
 }
 .main-frame427320729 {
   gap: 19px;
-  width: 154px;
+  width: auto;
   display: flex;
   padding: 0 0 0 2px;
-  align-items: flex-start;
+  justify-content: flex-end;
   flex-shrink: 0;
   justify-content: center;
 }

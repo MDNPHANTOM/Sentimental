@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.main-post {
+    gap: 5px;
+    top: 65px;
+    left: 31%;
+    width: 600px;
+    height: 100%; 
+    padding: 15px;
+    position: relative;
+    align-items: center;
+    flex-shrink: 0;
+    border-color: rgba(0, 0, 0, 1);
+    border-style: solid;
+    border-width: 1px;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: rgb(167, 164, 164);
+  
+  }

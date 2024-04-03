@@ -45,6 +45,7 @@ class PostController extends Controller
     
         $post = new Post();
         $post->user_id = Auth()->user()->id;
+        $post->concern = rand(0,1);
         $post->text = $request->text;
         $post->created_at = now();
         $post->updated_at = now();
@@ -59,6 +60,7 @@ class PostController extends Controller
             ]);
         $post->user_id = Auth()->user()->id;
         $post->text = $request->text;
+        $post->concern = rand(0,1);
         $post->updated_at = now();
         $post->save();
         return redirect()->route('posts.index')->with('success', 'Update Successfull');

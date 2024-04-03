@@ -23,6 +23,7 @@ class UserSeeder extends Seeder
         ->create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
+            'isAdmin' => 1,
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
         ]);

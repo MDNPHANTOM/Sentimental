@@ -17,41 +17,31 @@
         @yield('content')
     </div>
     <div class="nav-bar">
-        @if (Auth::user('Admin'))
-        <div class="main-frame427320728">
+        <div class="main-frame427320727">
             <a href="/posts" class="main-text23">Sentimental</a>
-            <div class="main-frame427320727">
-                <a class="main-text23">Users</a>
-                <a class="main-text24">Flagged Posts</a>
-                <a class="main-text24">Flagged Comments</a>
-                <a class="main-text25">Flagged Users</a>
+            @if (Auth::user()->isAdmin == 1)  
+                <a href='/users' class="main-text23">Users</a>
+                <a href='/warnings/flaggedContents' class="main-text24">Flagged Posts and Comments</a>
+                <a class="main-text24">Reported Posts and Comments</a>
                 <a class="main-text25">Blocked Users</a>
-            </div>
-        </div>
-        @elseif (Auth::user())
-        <div class="main-frame427320728">
-            <a href="/posts" class="main-text23">Sentimental</a>
-            <div class="main-frame427320727">
+            @elseif (Auth::user())
                 <a class="main-text23">My Friends</a>
                 <a class="main-text24">My Likes</a>
                 <a class="main-text25">My Interactions</a>
-            </div>
+            @endif
         </div>
-        @endif
-        <div class="main-frame427320726">
+        <div class="main-frame427320729">
             <a class="main-text30">My Settings</a>
-            <div class="main-frame427320729">
-                <a href="/profile" class="main-text32">{{Auth::user()->name}}</a>
-                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{{ route('logout') }}"
-                        onclick="event.preventDefault();
-                        document.getElementById('logout-form').submit();">
-                        {{ __('Logout') }}
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
-                </div>
+            <a href="/profile" class="main-text32">{{Auth::user()->name}}</a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{{ route('logout') }}"
+                    onclick="event.preventDefault();
+                    document.getElementById('logout-form').submit();">
+                    {{ __('Logout') }}
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
             </div>
         </div>
     </div>
@@ -103,7 +93,7 @@
                 adDiv.parentNode.removeChild(adDiv);
             }
         });
-    </script>
+
     </script>
 
 </body>

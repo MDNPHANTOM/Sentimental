@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostLikeController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -27,6 +28,11 @@ Route::put('/posts/{id}', [PostController::class, 'update'])->name('posts.update
 
 Route::get('/comments/{id}/edit', [CommentController::class, 'edit'])->name('comments.edit')->middleware('auth');
 Route::put('/comments/{id}', [CommentController::class, 'update'])->name('comments.update')->middleware('auth');
+
+
+Route::get('/warnings/flaggedContents', [AdminController::class, 'post_comment_index'])->name('post_comment_index')->middleware('auth');
+Route::get('/warnings/reportedContents', [AdminController::class, 'reported_index'])->name('post_comment_index')->middleware('auth');
+
 
 
 Route::get('/login', [LoginController::class, 'login'])->name('login')->middleware('auth');

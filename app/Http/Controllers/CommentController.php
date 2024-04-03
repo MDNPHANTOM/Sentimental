@@ -41,6 +41,7 @@ class CommentController extends Controller
             $comment->user_id = Auth()->user()->id;
             $comment->post_id = $request->input('post_id');
             $comment->commment_text = $request->commment_text;
+            $comment->concern = rand(0,1);
             $comment->save();
             return redirect()->back()->with('success', 'New Comment Added.');
 
@@ -78,6 +79,7 @@ class CommentController extends Controller
 
         $comment->user_id = Auth()->user()->id;
         $comment->commment_text = $request->commment_text;
+        $comment->concern = rand(0,1);
         $comment->save();
         return redirect()->route('posts.show', $comment->post_id)->with('success', 'Update Successfull');
         

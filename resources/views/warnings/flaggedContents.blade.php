@@ -1,30 +1,47 @@
 @extends('layouts.app')
-@section('title', 'showing post')
+@section('title', 'flaggedPosts')
 @section('content')
-<link href="{{url('css/show.css')}}" rel="stylesheet" />
-<div class="post-box">
-    <div class="main-post" >
-        <div class="main-show">
-            <div class="main-frame427320725">
-                <div class="main-post-info">
-                    <span class="main-text">{{ $post->user->name }}</span>
-                    <span class="main-text02">---</span>
-                    <span class="main-text04">4 Dec 2020</span>
-                    <span class="main-text04">Concern: {{$post->concern}}</span>
-                    @if ($post->user_id === Auth::user()->id)
-                        <div class="rem-element">
-                            <form  id="removeFriendButton" action="{{ route('posts.destroy', $post->id) }}" method="POST">
-                            <a href="{{ route('posts.edit', $post->id) }}"><button type="button">Edit Post</button></a>
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit">Delete Post</button>
-                            </form>
-                        </div>
-                    @endif
+<link href="{{url('css/app.css')}}" rel="stylesheet" />
+<div class="main-post" >
+    <button id="toggleButton">Reveal Posts and Comments</button>
+    <div id="flaggedPosts" class="">
+        <span>Posts</span>
+        @foreach ($posts as $post)
+            @if($post->concern == 1)
+                <div class="main-info">
+                    <div class="main-frame427320725">
+                    <div class="admin-frame427320730">
+                    <img
+                        alt="concern22017"
+                        src="/concern22017-ihg-200h.png"
+                        class="admin-concern2"
+                    />
+                    <img
+                        alt="blockuser22017"
+                        src="/blockuser22017-mk3c-200h.png"
+                        class="admin-blockuser2"
+                    />
+                    </div>
+                    <div class="main-post-info">
+                        <span class="main-text">{{ $post->user->name }}</span>
+                        <span class="main-text02">---</span>
+                        <span class="main-text04">4 Dec 2020</span>
+                        @if (Auth::user()->isAdmin == 1)
+                        <span class="main-text04">Concern: {{$post->concern}}</span>
+                        @endif
+                        @if (Auth::user()->isAdmin == 1)
+                            <div class="rem-element">
+                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit">Delete Post</button>
+                                </form>
+                            </div>
+                        @endif
+                    </div>
+                    <span class="main-text06">{{ $post->text }}</span>
                 </div>
-                <span class="main-text06">{{ $post->text }}</span>
-            </div>
-            <div class="main-react">
+                <div class="main-react">
                     <form id="likeForm" action="{{ $post->likedBy(auth()->user()) ? route('posts.unlike', $post) : route('posts.like', $post) }}" method="POST">
                         @csrf
                         @if($post->likedBy(auth()->user()))
@@ -53,30 +70,17 @@
                         src="/flag12017-9i3-200w.png"
                         class="main-image544983200"/></a>
                 </div>
-        </div>
-        <div class="main-create-comment">
-            <form action="{{ route('comments.store', $post->id) }}" method="POST">
-                @csrf
-                <input type="hidden" name ="post_id" id="post_id" value="{{$post->id}}"/>
-                <a href="/profile" class="main-text32">{{Auth::user()->name}}</a>
-                <textarea id="commment_text" name="commment_text" row="5" class="main-create-post-text @error('commment_text') is-invalid @enderror" type="text" placeholder="Create Comment"></textarea>
-                @error('text')
-                    <div class="alert alert-danger">{{ $message }}</div>
-                @enderror
-                <div class="main-create-post-frame1">
-                    <button class="main-create-post-button" type="submit">
-                        <span class="main-create-post-button-text ">create comment</span>
-                    </button>
-                    @if ($message = Session::get('success'))
-                        <div class="alert alert-success">
-                        <span>{{ $message }}</span>
-                        </div>
-                    @endif
                 </div>
-            </form>
+            @endif
+        @endforeach
+        <div class="nextpage">
+            {{ $posts->links('pagination::bootstrap-4') }}
         </div>
+    </div>
+    <div id="flaggedComments" class="hidden">
+        <span>Posts</span>
         @foreach ($comments as $comment)
-            @if ($post->id === $comment->post_id)
+            @if($comment->concern == 1)
                 <div class="main-info">
                     <div class="main-frame427320725">
                         <div class="main-post-info">
@@ -86,14 +90,16 @@
                             @if (Auth::user()->isAdmin == 1)
                                 <span class="main-text04">Concern: {{$comment->concern}}</span>
                             @endif
-                            @if ($comment->user_id === Auth::user()->id)
+                            @if ((Auth::user()->isAdmin == 1))
                             <div class="rem-element">
                                 <form action="{{ route('comments.destroy', $comment->id) }}" method="POST">
-                                    <a href="{{ route('comments.edit', $comment->id) }}"><button type="button">Edit Comment</button></a>
                                     @csrf
                                     @method('DELETE')
                                 <button type="submit">Delete Comment</button>
                             </form>
+                            <div class="rem-element">
+                                <a href="{{ route('posts.show', $comment->post_id) }}"><button type="button">Show Linked Post</button></a>
+                            </div>
                         </div>
                             @endif
                         </div>
@@ -119,27 +125,41 @@
                         class="main-save1"
                     /></a>
 
-                    <a><img
-                        alt="flag12017"
-                        src="/flag12017-9i3-200w.png"
-                        class="main-image544983200"/></a>
+                    <a>
+                    <img
+                        alt="IMAGE5449832002014"
+                        src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/5d2245cc-19f3-443a-aab3-ede589c81328?org_if_sml=11070&amp;force_format=original"
+                        class="main-image544983200"
+                    /></a>
                     </div>
                 </div>
                 @endif
             @endforeach
             <div class="nextpage">
                 {{ $comments->links('pagination::bootstrap-4') }}
-            <div>
-                
-            <script>
-                function editComment(commentId) {
-                    var commentText = document.getElementById('commentText_' + commentId);
-                    var editTextbox = document.getElementById('editTextbox_' + commentId);
-                    editTextbox.value = commentText.innerHTML;
-                    commentText.style.display = 'none';
-                    editTextbox.style.display = 'inline-block';
-                }
-            </script>
+            </div>
     </div>
 </div>
+
+<script>
+    const toggleButton = document.getElementById('toggleButton');
+    const flaggedPosts = document.getElementById('flaggedPosts');
+    const flaggedComments = document.getElementById('flaggedComments');
+
+    console.log(toggleButton, flaggedPosts, flaggedComments); // Check if elements are selected
+
+    document.getElementById('toggleButton').addEventListener('click', function() {
+        console.log('Button clicked'); // Check if the event listener is triggered
+        if (flaggedPosts.classList.contains('hidden')) {
+            // Show flagged posts and hide flagged comments
+            flaggedPosts.classList.remove('hidden');
+            flaggedComments.classList.add('hidden');
+        } else {
+            // Show flagged comments and hide flagged posts
+            flaggedPosts.classList.add('hidden');
+            flaggedComments.classList.remove('hidden');
+        }
+    });
+
+</script>
 @endsection

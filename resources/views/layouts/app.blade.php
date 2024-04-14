@@ -8,7 +8,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="{{url('css/app.css')}}" rel="stylesheet" />
+    
     <!-- Scripts -->
     @vite('resources/css/app.css')
 </head>
@@ -20,18 +20,17 @@
         <div class="main-frame427320727">
             <a href="/posts" class="main-text23">Sentimental</a>
             @if (Auth::user()->isAdmin == 1)  
-                <a href='/users' class="main-text23">Users</a>
-                <a href='/warnings/flaggedContents' class="main-text24">Flagged Posts and Comments</a>
-                <a class="main-text24">Reported Posts and Comments</a>
-                <a class="main-text25">Blocked Users</a>
+                <a href='/admin' class="main-text23">Users</a>
+                <a href='/warnings/flaggedPosts' class="main-text24">Flagged Posts and Comments</a>
+                <a href='/warnings/reportedPosts' class="main-text24">Reported Posts and Comments</a>
             @elseif (Auth::user())
-                <a class="main-text23">My Friends</a>
-                <a class="main-text24">My Likes</a>
+                <a class="main-text25">Discover New People</a>
+                <a class="main-text23">My Follows</a>
+                <a href="{{ route('users.liked') }}" class="main-text24">My Liked Posts</a>
                 <a class="main-text25">My Interactions</a>
             @endif
         </div>
         <div class="main-frame427320729">
-            <a class="main-text30">My Settings</a>
             <a href="/profile" class="main-text32">{{Auth::user()->name}}</a>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{{ route('logout') }}"
@@ -45,7 +44,8 @@
             </div>
         </div>
     </div>
-    <div class="main-mainpage">
+    @if (Auth::user()->support_tier > 0)
+        <div class="main-mainpage">
             <div class="main-frame-friend">
                 <button id="removeFriendButton" class="rem-element">X</button>
                 <span class="main-text08">
@@ -76,8 +76,8 @@
                     </span>
                 </div>
             </div>
-    </div>
-
+        </div>
+    @endif
     <script>
         // removes ads
         document.getElementById('removeAdButton').addEventListener('click', function() {

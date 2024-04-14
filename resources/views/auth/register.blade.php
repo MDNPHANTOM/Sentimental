@@ -1,6 +1,5 @@
-<link href="{{url('css/sign-up.css')}}" rel="stylesheet" />
 @vite('resources/css/sign-up.css')
-<div class="sign-up-container">
+<div class="body">
   <div class="sign-up-sign-up">
     <div class="sign-up-form">
       <span class="sign-up-text"><span>Sign Up</span></span>

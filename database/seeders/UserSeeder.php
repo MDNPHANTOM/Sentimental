@@ -24,6 +24,10 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@example.com',
             'isAdmin' => 1,
+            'concerns' => 0,
+            'reported' => 0,
+            'support_Tier' => 0,
+            'blocked' => 0,
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
         ]);

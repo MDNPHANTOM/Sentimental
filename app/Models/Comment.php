@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\CommentReport;
 
 class Comment extends Model
 {
     protected $fillable = [
-        'commment_text',
+        'comment_text',
         'post_id',
         'user_id',
     ];
@@ -21,9 +22,19 @@ class Comment extends Model
     {
     return $this->belongsTo(User::class);
     }
+
+
+    public function comment_reports()
+    {
+        return $this->hasMany(CommentReport::class)->withTimestamps();
+    }
+
     public function post()
     {
     return $this->belongsTo(Post::class);
     }
+
+
+    
 
 }

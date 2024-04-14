@@ -6,7 +6,7 @@
         @csrf
         @method('PUT')
         <a href="/profile" class="main-text32">{{Auth::user()->name}}</a>
-        <textarea name="commment_text" class="main-create-post-text @error('commment_text') is-invalid @enderror" id="commment_text" type="text" required>{{ old('commment_text', $comment->commment_text) }}</textarea>
+        <textarea name="comment_text" class="main-create-post-text @error('comment_text') is-invalid @enderror" id="comment_text" type="text" required>{{ old('comment_text', $comment->comment_text) }}</textarea>
         @error('comment_text')
             <div class="alert alert-danger">{{ $message }}</div>
         @enderror

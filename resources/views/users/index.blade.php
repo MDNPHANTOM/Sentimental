@@ -1,22 +1,32 @@
 @extends('layouts.app')
 @section('title', 'showing users')
 @section('content')
-    @foreach ($posts as $post)
-        <div class="main-post-info">
-            <span class="main-text">{{ $user->name }}</span>
-            <span class="main-text02">---</span>
-            <span class="main-text04">4 Dec 2020</span>
-            @if ( Auth::user('Admin'))
-                <div class="rem-element">
-                    <form action="{{ route('users.block', $post->id) }}" method="POST">
-                    <a href="{{ route('posts.edit', $post->id) }}"><button type="button">Edit Post</button></a>
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit">Delete Post</button>
-                    </form>
-                </div>
-            @endif
-        </div>
+<div class="main-post" >
+    @foreach ($users as $user)
+        <div class="main-info1">
+            <div class="main-frame427320725">
+              <div class="main-post-info">
+                 <span class="main-text">{{ $user->name }}</span>
+                 <span class="main-text02">---</span>
+                 <span class="main-text02">Follows: </span>
+              </div>  
 
+              @if (auth()->user()->follows($user))
+                  <form action="{{ route('users.unfollow', $user) }}" method="POST">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit">Unfollow</button>
+                  </form>
+              @else
+                  <form action="{{ route('users.follow', $user) }}" method="POST">
+                      @csrf
+                      <button type="submit">Follow</button>
+                  </form>
+              @endif
+            </div>
+        </div>
     @endforeach
+</div>
 @endsection
+
+

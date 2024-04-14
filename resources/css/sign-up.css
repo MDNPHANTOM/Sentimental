@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+.body {
+  background-color: rgba(149, 166, 198, 1);
+}
 .sign-up-container {
     width: 100%;
     display: flex;
@@ -12,7 +17,7 @@
   }
   .sign-up-sign-up {
     width: 100%;
-    height: 1200px;
+    height: 100%;
     display: flex;
     overflow: hidden;
     position: relative;

@@ -24,6 +24,10 @@ class PostFactory extends Factory
             'text' => $this->faker->paragraph,
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'concern' => $this->faker->randomElement([0, 1]),
+            'post_reports' => 0,
+            
         ];
     }
 }
+
+

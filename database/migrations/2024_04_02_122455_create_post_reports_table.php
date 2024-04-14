@@ -13,12 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reported_comments', function (Blueprint $table) {
+        Schema::create('post_reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('comment_id')->constrained()->onDelete('cascade');
-            $table->string('post_report_text');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->string('post_report_text', 500)->nullable();
             $table->timestamps();
+
+            
         });
     }
 
@@ -29,6 +31,10 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reported_comments');
+        Schema::table('post_reports', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['post_id']);
+        });
+        Schema::dropIfExists('post_reports');
     }
 };

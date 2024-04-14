@@ -14,11 +14,22 @@ class CommentSeeder extends Seeder
         // Generate 20 posts using the factory
         $comments = Comment::factory(100)->make();
 
-        // Assign random user and game to each post and save to the database
+  
         foreach ($comments as $comment) {
             $comment->user_id = User::inRandomOrder()->first()->id;
             $comment->post_id = Post::inRandomOrder()->first()->id;
             $comment->save();
+
+            if ($comment->concern == 1) {
+                $user = User::find($comment->user_id);
+                $user->concerns = $user->concerns += 1;
+                $user->save();
+            }
+
+
+
+            
         }
+
     }
 }

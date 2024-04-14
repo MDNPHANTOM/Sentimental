@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('text');
             $table->unsignedInteger('likes')->default(0);
+            $table->unsignedInteger('post_reports')->default(0);
             $table->unsignedInteger('concern')->default(0);
-            $table->unsignedInteger('reports')->default(0);
             $table->timestamps();
         });
     }
@@ -31,6 +31,9 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
         Schema::dropIfExists('posts');
     }
 };

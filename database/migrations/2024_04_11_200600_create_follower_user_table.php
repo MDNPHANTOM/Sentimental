@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reported_post', function (Blueprint $table) {
+        Schema::create('follower_user', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('post_id')->constrained()->onDelete('cascade');
-            $table->string('commment_report_text');
-            
+            $table->foreignId('follower_id')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reported_post');
+        Schema::dropIfExists('follower_user');
     }
 };

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 use Faker\Factory as faker;
-use App\Models\Comment;
 use App\Models\User;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,8 +17,9 @@ class CommentFactory extends Factory
         return [
             'user_id' => $this->faker->randomElement($userIds),
             'post_id' => $this->faker->randomElement($postIds),
-            'commment_text' => $this->faker->sentence,
-            'concern' => $this->faker->randomElement([0, 1])
+            'comment_text' => $this->faker->sentence,
+            'concern' => $this->faker->randomElement([0, 1]),
+            'comment_reports' => 0,
 
         ];
     }

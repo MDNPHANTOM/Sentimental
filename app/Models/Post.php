@@ -7,17 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Post;
 use App\Models\Comment;
-
+use App\Models\PostReport;
 class Post extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'text',
         'user_id',
-
-    
+        'text',  
     ];
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -35,6 +34,12 @@ class Post extends Model
     public function likes()
     {
         return $this->belongsToMany(User::class, 'post_like')->withTimestamps();
+    }
+
+
+    public function post_reports()
+    {
+        return $this->hasMany(PostReport::class, 'reported_post')->withTimestamps();
     }
 
 }

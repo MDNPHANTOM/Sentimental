@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->unsignedInteger('isAdmin')->default(0);
+            $table->unsignedInteger('concerns')->default(0);
+            $table->unsignedInteger('reported')->default(0);
             $table->unsignedInteger('support_tier')->default(0);
             $table->unsignedInteger('blocked')->default(0);
             $table->string('password');

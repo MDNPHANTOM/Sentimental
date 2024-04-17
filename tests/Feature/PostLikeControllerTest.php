@@ -13,66 +13,159 @@ class PostLikeControllerTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    // REGULAR USER
     public function it_shows_liked_posts()
     {
-        // Create a user for testing
         $user = User::factory()->create();
         Auth::login($user);
-
-        // Create some posts
-        $posts = Post::factory(3)->create();
-
-        // Like some posts
+        $posts = Post::factory(3)->create(['user_id' => $user->id]);
         foreach ($posts as $post) {
             $user->likes()->attach($post);
         }
-
-        // Visit the route
-        $response = $this->actingAs($user)->get(route('show_liked_posts'));
-
-        // Assert that the response contains the posts
+        $response = $this->actingAs($user)->get(route('users.liked'));
         foreach ($posts as $post) {
-            $response->assertSee($post->title); // Assuming the post title is displayed
+            $response->assertSee($post->text);
         }
     }
-
     /** @test */
-    public function it_likes_a_post()
+    public function user_likes_a_post()
     {
-        // Create a user for testing
         $user = User::factory()->create();
         Auth::login($user);
-
-        // Create a post
-        $post = Post::factory()->create();
-
-        // Like the post
-        $response = $this->actingAs($user)->post(route('like_post', $post));
-
-        // Assert that the post is liked
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $response = $this->actingAs($user)->post(route('posts.like', $post));
         $response->assertRedirect();
         $this->assertTrue($user->likes->contains($post));
     }
 
     /** @test */
-    public function it_unlikes_a_post()
+    public function user_unlikes_a_post()
     {
-        // Create a user for testing
         $user = User::factory()->create();
         Auth::login($user);
-
-        // Create a post
-        $post = Post::factory()->create();
-
-        // Like the post
+        $post = Post::factory()->create(['user_id' => $user->id]);
         $user->likes()->attach($post);
-
-        // Unlike the post
-        $response = $this->actingAs($user)->delete(route('unlike_post', $post));
-
-        // Assert that the post is unliked
+        $response = $this->actingAs($user)->delete(route('posts.unlike', $post));
         $response->assertRedirect();
         $this->assertFalse($user->likes->contains($post));
     }
+
+    /** @test */
+    public function prevents_user_from_unliking_a_post_they_have_not_liked()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $response = $this->actingAs($user)->delete(route('posts.unlike', $post));
+        $response->assertStatus(302);
+    }
+
+
+    //BLOCKED USER
+    public function prevents_blocked_user_from_liking_a_post()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $blockedUser = User::factory()->create(['blocked' => 1]);    
+        $response = $this->actingAs($blockedUser)->post(route('posts.like', $post));
+        $response->assertForbidden();
+        $this->assertFalse($blockedUser->likes->contains($post));
+    }
+
+    /** @test */
+    public function prevents_blocked_user_from_unliking_a_post()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $blockedUser = User::factory()->create(['blocked' => 1]);    
+        $blockedUser->likes()->attach($post);
+        $response = $this->actingAs($blockedUser)->delete(route('posts.unlike', $post));
+        $response->assertForbidden();
+        $this->assertTrue($blockedUser->likes->contains($post));
+    }
+
+
+    /** @test */
+    public function it_prevents_user_from_liking_a_post_created_by_a_blocked_user()
+    {
+        $user = User::factory()->create();
+
+        $blockedUser = User::factory()->create(['blocked' => 1]);  
+        $post = Post::factory()->create(['user_id' => $blockedUser->id]);
+
+        $response = $this->actingAs($user)->post(route('posts.like', $post));
+
+        $response->assertForbidden();
+        $this->assertFalse($user->likes->contains($post));
+
+    }
+
+    /** @test */
+    public function it_prevents_user_from_unliking_a_post_created_by_a_blocked_user()
+    {
+        $user = User::factory()->create();
+        $blockedUser = User::factory()->create(['blocked' => 1]);  
+        $post = Post::factory()->create(['user_id' => $blockedUser->id]);
+
+        $user->likes()->attach($post);
+
+        $response = $this->actingAs($user)->delete(route('posts.unlike', $post));
+
+        $response->assertForbidden();
+        $this->assertTrue($user->likes->contains($post));
+    }
+
+    /** @test */
+    public function prevents_user_from_liking_a_nonexistent_post()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('posts.like', ['nonexistent_post_id']));
+
+        $response->assertStatus(404);
+
+        $this->assertFalse($user->likes->contains('id', 'nonexistent_post_id'));
+    }
+
+    /** @test */
+    public function prevents_user_from_unliking_a_nonexistent_post()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->delete(route('posts.unlike', ['nonexistent_post_id']));
+
+        $response->assertStatus(404);
+
+        $this->assertFalse($user->likes->contains('id', 'nonexistent_post_id'));
+    }
+
+
+    /** @test */
+    public function prevents_guest_from_unliking_a_post()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->delete(route('posts.unlike', $post));
+
+        $response->assertStatus(401);
+
+        // Additional assertion to ensure that the post is not liked by any user
+        $this->assertFalse($post->likes()->exists());
+    }
+
+    /** @test */
+    public function prevents_guest_from_liking_a_post()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->post(route('posts.like', $post));
+
+        $response->assertStatus(401);
+
+        // Additional assertion to ensure that the post is not liked by any user
+        $this->assertFalse($post->likes()->exists());
+    }
+
 }
 

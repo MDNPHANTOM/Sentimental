@@ -18,9 +18,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()
-        ->count(1)
-        ->create([
+        User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
             'isAdmin' => 1,
@@ -31,6 +29,31 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
         ]);
+        
+        User::factory()->create([
+            'name' => 'User',
+            'email' => 'user@example.com',
+            'isAdmin' => 0,
+            'concerns' => 0,
+            'reported' => 0,
+            'support_Tier' => 0,
+            'blocked' => 0,
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ]);
+        
+        User::factory()->create([
+            'name' => 'Blocked',
+            'email' => 'blocked@example.com',
+            'isAdmin' => 0,
+            'concerns' => 0,
+            'reported' => 0,
+            'support_Tier' => 0,
+            'blocked' => 1,
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ]);
+        
         User::factory()->count(10)->create();
     }
 }

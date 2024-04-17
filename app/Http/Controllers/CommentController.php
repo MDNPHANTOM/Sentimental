@@ -14,26 +14,15 @@ class CommentController extends Controller
     {
      }
     
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(Post $post) {
         return view('comments.create', [
             'post' => $post
             ]);
         }
 
-    /**
-     * Store a newly created resource in storage.
-     *ds
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request,Post $post){
         $request->validate([
+            'post_id' => 'required|exists:posts,id',
             'comment_text' => 'required|max:1000']);
 
         $comment = new Comment;

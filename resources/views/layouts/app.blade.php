@@ -24,10 +24,7 @@
                 <a href='/warnings/flaggedPosts' class="main-text24">Flagged Posts and Comments</a>
                 <a href='/warnings/reportedPosts' class="main-text24">Reported Posts and Comments</a>
             @elseif (Auth::user())
-                <a class="main-text25">Discover New People</a>
-                <a class="main-text23">My Follows</a>
                 <a href="{{ route('users.liked') }}" class="main-text24">My Liked Posts</a>
-                <a class="main-text25">My Interactions</a>
             @endif
         </div>
         <div class="main-frame427320729">

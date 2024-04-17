@@ -12,16 +12,25 @@ class PostController extends Controller
 
     public function index(){
         $blocked_users = User::where('blocked', 1)->pluck('id');
-        $posts = Post::orderBy('created_at', 'desc')->whereNotIn('user_id', $blocked_users)->paginate(20);
+        $posts = Post::orderBy('created_at', 'desc')->where(function ($query) use ($blocked_users) {
+            $query->whereNotIn('user_id', $blocked_users)
+                ->orWhere('user_id', Auth()->user()->id);
+                })->orderBy('created_at', 'desc')->paginate(20);
         return view('posts.index', compact('posts'));
         
     }
     public function show(Post $post) {
-        $blocked_users = User::where('blocked', 1)->pluck('id');
-        $comments = Comment::where('post_id', $post->id)->whereNotIn('user_id', $blocked_users)->orderBy('created_at', 'desc')->paginate(20);
-        return view('posts.show', [
-        'post' => $post,'comments' => $comments
-        ]);
+        $creator = User::find($post->user_id);
+        if($creator->blocked == 1 && Auth()->user()->id != $creator->id){
+            abort(403, 'Unauthorized access Post is Blocked');
+        }else{
+            $blocked_users = User::where('blocked', 1)->pluck('id');
+            $comments = Comment::where('post_id', $post->id)->where(function ($query) use ($blocked_users) {
+                $query->whereNotIn('user_id', $blocked_users)
+                    ->orWhere('user_id', Auth()->user()->id);
+                    })->orderBy('created_at', 'desc')->paginate(20);
+            return view('posts.show', ['post' => $post,'comments' => $comments]);
+        }
     } 
 
 
@@ -30,7 +39,7 @@ class PostController extends Controller
             return view('posts.edit', [
             'post' => $post
             ]);
-        } else{
+        }else{
             abort(403, 'Unauthorized access');
         }
     }
@@ -90,6 +99,7 @@ class PostController extends Controller
             abort(403, 'Unauthorized access');
         }
     }
+
 
 
         

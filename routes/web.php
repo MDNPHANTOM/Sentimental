@@ -8,8 +8,6 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\FollowerController;
-use App\Http\Controllers\UserController;
 
 
 //login functionalities
@@ -19,17 +17,17 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::middleware('auth.user')->group(function () {
     Route::get('/', [HomeController::class, 'index']);
-    Route::resource('comments', CommentController::class)->only(['index', 'create', 'show']);
-    Route::resource('posts', PostController::class)->only(['index', 'create', 'show']);
+    Route::resource('comments', CommentController::class)->only(['index', 'create', 'show', 'destroy']);
+    Route::resource('posts', PostController::class)->only(['index', 'create', 'show', 'destroy']);
     Route::get('/users/liked', [PostLikeController::class, 'show_liked_posts'])->name('users.liked');
 
 });
 
 Route::middleware('auth.userblocked')->group(function () {
-    Route::resource('comments', CommentController::class)->only(['store', 'edit', 'update', 'destroy']);
-    Route::resource('posts', PostController::class)->only(['store', 'edit', 'update', 'destroy']);
-    Route::post('/posts/{post}/like', [PostLikeController::class, 'like'])->middleware('auth')->name('posts.like');
-    Route::delete('/posts/{post}/unlike', [PostLikeController::class, 'unlike'])->middleware('auth')->name('posts.unlike');
+    Route::resource('comments', CommentController::class)->only(['store', 'edit', 'update']);
+    Route::resource('posts', PostController::class)->only(['store', 'edit', 'update']);
+    Route::post('/posts/{post}/like', [PostLikeController::class, 'like'])->name('posts.like');
+    Route::delete('/posts/{post}/unlike', [PostLikeController::class, 'unlike'])->name('posts.unlike');
     
     //require only user to post it
     Route::get('/posts/{post}/report', [ReportController::class, 'create_post_report'])->name('posts.report');
@@ -39,13 +37,6 @@ Route::middleware('auth.userblocked')->group(function () {
     Route::post('/comments/{comment}/report', [ReportController::class, 'report_comment'])->name('comments.report_comment');
 
 });
-
-
-
-Route::resource('users', FollowerController::class);
-Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('auth.user');
-Route::Post('/users/{user}/follow', [FollowerController::class, 'follow'])->name('users.follow')->middleware('auth.user');
-Route::delete('/users/{user}/unfollow', [FollowerController::class, 'unfollow'])->name('users.unfollow')->middleware('auth.user');
 
 
 Route::middleware('auth.admin')->group(function () {
@@ -77,7 +68,6 @@ Route::middleware('auth.admin')->group(function () {
     Route::delete('/reports/{post}/post_destroy', [ReportController::class, 'post_destroy'])->name('posts.post_destroy');
     Route::delete('/reports/{comment}/comment_destroy', [ReportController::class, 'comment_destroy'])->name('comments.comment_destroy');
 
-    Route::resource('users', FollowerController::class);
 });
 
 Auth::routes();

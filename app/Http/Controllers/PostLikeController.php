@@ -12,20 +12,33 @@ class PostLikeController extends Controller
 
         $liker = auth()->user();
         $liker->likes();
-        $posts = Post::orderBy('created_at', 'desc');
+        $posts =  $liker->likes()->orderBy('created_at', 'desc');
         return view('users.liked', compact('posts'));
     }
 
     public function like(Post $post){
         $liker = auth()->user();
-        $liker->likes()->attach($post);
-
-        return redirect()->back()->with('success', 'Post liked');
+        $user = User::find($post->user_id);
+        if($user->blocked == 1){
+            abort(403, 'Unauthorized access Post is Blocked');
+        }else{
+            $liker->likes()->attach($post);
+            return redirect()->back()->with('success', 'Post liked');
+        }
     }
+
     public function unlike(Post $post){
         $liker = auth()->user();
-        $liker->likes()->detach($post);
-
-        return redirect()->back()->with('success', 'Post unliked');
+        $user = User::find($post->user_id);
+        if($user->blocked == 1){
+            abort(403, 'Unauthorized access Post is Blocked');
+        }else{
+            $liker->likes()->detach($post);
+            return redirect()->back()->with('success', 'Post unliked');
+        }
     }
+
+
+
+
 }

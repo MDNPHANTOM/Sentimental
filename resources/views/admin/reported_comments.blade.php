@@ -56,11 +56,37 @@
                             <span class="main-text04">Reports: {{$comment->comment_reports}}</span>
                             @if($comment->comment_reports > 0)
                                 <div class="rem-element">
-                                    <a href="{{ route('reports.comment_report', [$comment->user_id, $comment->id]) }}">
+                                    <a href="{{ route('reports.comment_report', [$comment->user_id, $comment->id]) }}?{{ time() }}">
                                         <button type="button">Show Comment Reports</button>
                                     </a>
                                 </div>
                             @endif
+                        </div>
+                        <div class="main-frame427320700">
+                            <div class="main-post-info1">
+                                <span class="main-text04">OVERALL EVAL:</span>
+                                <span class="main-text04">Compound: {{$comment->compound}}</span>
+                                <span class="main-text04">Neutral: {{$comment->neutral}}</span>
+                                <span class="main-text04">Positive: {{$comment->positive}}</span>
+                                <span class="main-text04">Negative: {{$comment->negative}}</span>
+                                <span></span>
+                            </div>
+                            <div class="main-post-info1">
+                                <span class="main-text04">NEGATIVE EMOTION:</span>
+                                <span class="main-text04">Fear: {{$comment->fear}}</span>
+                                <span class="main-text04">Anger: {{$comment->anger}}</span>
+                                <span class="main-text04">Sadness: {{$comment->sadness}}</span>
+                                <span class="main-text04">Disgust: {{$comment->disgust}}</span>
+                                <span></span>
+                            </div>
+                            <div class="main-post-info1">
+                                <span class="main-text04">POSITIVE EMOTION:</span>
+                                <span class="main-text04">Joy: {{$comment->joy}}</span>
+                                <span class="main-text04">Trust: {{$comment->trust}}</span>
+                                <span class="main-text04">Surprise: {{$comment->surprise}}</span>
+                                <span class="main-text04">Anticipation: {{$comment->anticipation}}</span>
+                                <span></span>
+                            </div>
                         </div>
                         <span class="main-text06" id="commentText_{{ $comment->id }}">{{ $comment->comment_text }}</span>
                     </div>
@@ -73,7 +99,7 @@
                         /></a>
                         <a href="{{ route('comments.report', $comment->id) }}"><img
                             alt="flag12017"
-                            src="/flag12017-9i3-200w.png"
+                            src="{{ asset('images/flag.png') }}"
                             class="main-image544983200"/></a>
                     </div>
                 </div>

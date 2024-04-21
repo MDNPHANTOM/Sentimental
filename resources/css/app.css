@@ -253,6 +253,7 @@
 }
 
 
+
 .main-create-post {
   height: 180px;
   width: 95%;
@@ -485,8 +486,30 @@
   align-items: flex-start;
   flex-direction: column;
 }
+
+.main-frame427320700 {
+  gap: 19px;
+  display: flex;
+  align-items: flex-end;
+  background-color: rgb(255, 255, 255);
+  border-color: rgb(40, 43, 41);
+  border-style: solid;
+  border-width: 1px;
+  padding: 0 0 0 8px;
+  gap: 0px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
 .main-post-info {
   gap: 19px;
+  display: flex;
+  align-items: center;
+  
+}
+.main-post-info1 {
+  gap: 14px;
   display: flex;
   align-items: center;
   
@@ -522,7 +545,7 @@
 .main-text04 {
   color: rgba(0, 0, 0, 1);
   height: auto;
-  font-size: 16px;
+  font-size: 13px;
   font-style: Medium;
   text-align: left;
   font-family: Roboto;

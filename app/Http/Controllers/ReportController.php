@@ -9,6 +9,7 @@ use App\Models\CommentReport;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ReportController extends Controller
 {
@@ -51,14 +52,24 @@ class ReportController extends Controller
 
     public function show_post_reports(Request $request, User $user, Post $post){
         $postreports = PostReport::where('post_id', $post->id)->orderBy('created_at', 'desc')->paginate(20);
-        return view('admin.reports.post_reports', ['user' => $user,'post' => $post,'postreports' => $postreports]);
+        $view = view('admin.reports.post_reports', ['user' => $user,'post' => $post,'postreports' => $postreports]);
+
+        $response = new Response($view);
+        $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    
+        return $response;
     }
 
     public function show_comment_reports(Request $request, User $user, Comment $comment){
         $commentreports = CommentReport::where('comment_id', $comment->id)->orderBy('created_at', 'desc')->paginate(20);
         $comments = Comment::where('post_id', $comment->post_id)->orderBy('created_at', 'desc')->paginate(20);
         $post = Post::findOrFail($comment->post_id);
-        return view('admin.reports.comment_reports', ['user' => $user,'post' => $post,'target_comment' => $comment,'comments' => $comments,'commentreports' => $commentreports]);
+        $view = view('admin.reports.comment_reports', ['user' => $user,'post' => $post,'target_comment' => $comment,'comments' => $comments,'commentreports' => $commentreports]);
+
+        $response = new Response($view);
+        $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    
+        return $response;
     }
 
 
@@ -66,7 +77,7 @@ class ReportController extends Controller
 
     public function report_post(Request $request, Post $post){
         $request->validate([
-            'post_report_text' => 'required']);
+            'post_report_text' => 'required|max:2000']);
         $p_report = new PostReport();
         $p_report->user_id = Auth()->user()->id;
         $p_report->post_id = $post->id;
@@ -84,7 +95,7 @@ class ReportController extends Controller
 
     public function report_comment(Request $request, Comment $comment){
         $request->validate([
-            'comment_report_text' => 'required']);
+            'comment_report_text' => 'required|max:2000']);
 
         $c_report = new CommentReport();
         $c_report->user_id = Auth()->user()->id;
@@ -144,7 +155,7 @@ class ReportController extends Controller
     public function delete_comment_report(CommentReport $report){
         $comment = Comment::find($report->comment_id);
         $user = User::find($comment->user_id);
-        if($user->reported > 0 &&  $post->post_reports > 0){
+        if($user->reported > 0 &&  $comment->comment_reports > 0){
             $user->reported -= 1;
             $comment->comment_reports -= 1;
         }

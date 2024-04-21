@@ -8,7 +8,6 @@
                 <span class="main-text">{{ $post->user->name }}</span>
                 <span class="main-text02">---</span>
                 <span class="main-text04">{{$post->created_at->format('Y-m-d H:i:s')}}</span>
-                <span class="main-text04">Concern: {{$post->concern}}</span>
                 @if ($post->user_id === Auth::user()->id)
                     <div class="rem-element">
                         <form  id="removeFriendButton" action="{{ route('posts.destroy', $post->id) }}" method="POST">
@@ -43,9 +42,9 @@
                 src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/e8d7d336-b592-43ee-941a-5fdcd5a782e0?org_if_sml=1589&amp;force_format=original"
                 class="main-comment"/></a>
             <a><img
-                alt="flag12017"
-                src="/flag12017-9i3-200w.png"
-                class="main-image544983200"/></a>
+             alt="flag12017"
+            src="{{ asset('images/flag.png') }}"
+            class="main-image544983200"/></a>
         </div>
     </div>
     <form  class="main-create-post1" action="{{ route('posts.report_post', $post->id) }}" method="POST">

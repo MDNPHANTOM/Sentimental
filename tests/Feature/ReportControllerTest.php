@@ -260,10 +260,11 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function user_reported_count_decreases_when_post_report_is_deleted()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['isAdmin' => 1]);
         $post = Post::factory()->create(['user_id' => $user->id]);
         $postReport = PostReport::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
         $user = User::find($postReport->post->user_id);
+        $user->reported += 1;
         $initialReportedCount = $user->reported;
         $this->delete(route('reports.delete_post_report', $postReport));
         $user->refresh();
@@ -273,10 +274,11 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function post_report_count_decreases_when_post_report_is_deleted()
     {
-        $user = User::factory()->create(['isAdmin' => 1]);
-        $post1 = Post::factory()->create(['user_id' => $user->id]);
-        $postReport = PostReport::factory()->create(['user_id' => $user->id, 'post_id' => $post1->id]);
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post1 = Post::factory()->create(['user_id' => $admin->id]);
+        $postReport = PostReport::factory()->create(['user_id' => $admin->id, 'post_id' => $post1->id]);
         $post = Post::find($postReport->post_id);
+        $post->post_reports += 1;
         $initialReportCount = $post->post_reports;
         $this->delete(route('reports.delete_post_report', $postReport));
         $post->refresh();
@@ -287,20 +289,20 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function post_report_deletion_redirects_back()
     {
-        $user = User::factory()->create(['isAdmin' => 1]);
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $postReport = PostReport::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
-        $response = $this->delete(route('reports.delete_post_report', $postReport));
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $postReport = PostReport::factory()->create(['user_id' => $admin->id, 'post_id' => $post->id]);
+        $response = $this->actingAs($admin)->delete(route('reports.delete_post_report', $postReport));
         $response->assertRedirect();
     }
 
     /** @test */
     public function success_message_is_flashed_after_deleting_post_report()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $postReport = PostReport::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
-        $response = $this->delete(route('reports.delete_post_report', $postReport));
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $postReport = PostReport::factory()->create(['user_id' => $admin->id, 'post_id' => $post->id]);
+        $response = $this->actingAs($admin)->delete(route('reports.delete_post_report', $postReport));
         $response->assertSessionHas('success', 'Deleted Report on post');
     }
 
@@ -317,9 +319,9 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function unauthorized_user_cannot_delete_post_report()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $postReport = PostReport::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $postReport = PostReport::factory()->create(['user_id' => $admin->id, 'post_id' => $post->id]);
         $unauthorizedUser = User::factory()->create();
         $response = $this->actingAs($unauthorizedUser)
                          ->delete(route('reports.delete_post_report', $postReport));
@@ -331,13 +333,13 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function deleting_last_post_report_does_not_affect_user_reported_count()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $postReport = PostReport::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
-        $initialReportedCount = $user->reported;
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $postReport = PostReport::factory()->create(['user_id' => $admin->id, 'post_id' => $post->id]);
+        $initialReportedCount = $admin->reported;
         $this->delete(route('reports.delete_post_report', $postReport));
-        $user->refresh();
-        $this->assertEquals($initialReportedCount, $user->reported);
+        $admin->refresh();
+        $this->assertEquals($initialReportedCount, $admin->reported);
     }
 
 
@@ -352,10 +354,10 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function unauthorized_user_cannot_delete_comment_report()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $user->id]);
-        $commentReport = CommentReport::factory()->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
+        $admin = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $admin->id]);
+        $commentReport = CommentReport::factory()->create(['user_id' => $admin->id, 'comment_id' => $comment->id]);
         $unauthorizedUser = User::factory()->create();
         $response = $this->actingAs($unauthorizedUser)
                          ->delete(route('reports.delete_comment_report', $commentReport));
@@ -366,14 +368,14 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function deleting_last_comment_report_does_not_affect_user_reported_count()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $user->id]);
-        $commentReport = CommentReport::factory()->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
-        $initialReportedCount = $user->reported;
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $admin->id]);
+        $commentReport = CommentReport::factory()->create(['user_id' => $admin->id, 'comment_id' => $comment->id]);
+        $initialReportedCount = $admin->reported;
         $this->delete(route('reports.delete_comment_report', $commentReport));
-        $user->refresh();
-        $this->assertEquals($initialReportedCount, $user->reported);
+        $admin->refresh();
+        $this->assertEquals($initialReportedCount, $admin->reported);
     }
 
 
@@ -381,13 +383,14 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function comment_report_count_decreases_when_comment_report_is_deleted()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $user->id]);
-        $commentReport = CommentReport::factory()->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $admin->id]);
+        $commentReport = CommentReport::factory()->create(['user_id' => $admin->id, 'comment_id' => $comment->id]);
         $comment = Comment::find($commentReport->comment_id);
+        $comment->comment_reports += 1;
         $initialReportCount = $comment->comment_reports;
-        $this->delete(route('reports.delete_comment_report', $commentReport));
+        $this->actingAs($admin)->delete(route('reports.delete_comment_report', $commentReport));
         $comment->refresh();
         $this->assertEquals($initialReportCount - 1, $comment->comment_reports);
     }
@@ -395,36 +398,364 @@ class ReportControllerTest extends TestCase
     /** @test */
     public function comment_report_deletion_redirects_back()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $user->id]);
-        $commentReport = CommentReport::factory()->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
-        $response = $this->delete(route('reports.delete_comment_report', $commentReport));
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $admin->id]);
+        $commentReport = CommentReport::factory()->create(['user_id' => $admin->id, 'comment_id' => $comment->id]);
+        $response = $this->actingAs($admin)->delete(route('reports.delete_comment_report', $commentReport));
         $response->assertRedirect();
     }
 
     /** @test */
     public function success_message_is_flashed_after_deleting_comment_report()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $user->id]);
-        $commentReport = CommentReport::factory()->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
-        $response = $this->delete(route('reports.delete_comment_report', $commentReport));
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $admin->id]);
+        $commentReport = CommentReport::factory()->create(['user_id' => $admin->id, 'comment_id' => $comment->id]);
+        $response = $this->actingAs($admin)->delete(route('reports.delete_comment_report', $commentReport));
         $response->assertSessionHas('success', 'Deleted Report on post');
     }
 
     /** @test */
     public function comment_report_is_deleted_successfully()
     {
-        $user = User::factory()->create();
-        $post = Post::factory()->create(['user_id' => $user->id]);
-        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $user->id]);
-        $commentReport = CommentReport::factory()->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
-        $response = $this->delete(route('reports.delete_comment_report', $commentReport));
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id,'user_id' => $admin->id]);
+        $commentReport = CommentReport::factory()->create(['user_id' => $admin->id, 'comment_id' => $comment->id]);
+        $response = $this->actingAs($admin)->delete(route('reports.delete_comment_report', $commentReport));
         $this->assertDeleted($commentReport);
         $response->assertRedirect();
     }
+
+
+    public function test_admin_can_delete_post()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $response = $this->actingAs($admin)->delete(route('posts.post_destroy', $post));
+        $response->assertRedirect(route('admin.reported_posts', $admin->id));
+        $this->assertDeleted($post);
+        $response->assertSessionHas('success');
+    }
+
+    public function test_regular_user_cannot_delete_post()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $response = $this->actingAs($user)->delete(route('posts.post_destroy', $post));
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('posts', ['id' => $post->id]);
+        $response->assertSessionMissing('success');
+    }
+
+    public function test_guest_cannot_delete_post()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $response = $this->delete(route('posts.post_destroy', $post));
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('posts', ['id' => $post->id]);
+        $response->assertSessionMissing('success');
+    }
+
+    public function test_admin_can_delete_comment()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id, 'user_id' => $admin->id]);
+        $response = $this->actingAs($admin)->delete(route('comments.comment_destroy', $comment));
+        $response->assertRedirect(route('admin.reported_comments', $admin->id));
+        $this->assertDeleted($comment);
+        $response->assertSessionHas('success');
+    }
+
+    public function test_regular_user_cannot_delete_comment()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id, 'user_id' => $user->id]);
+        $response = $this->actingAs($user)->delete(route('comments.comment_destroy', $comment));
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('comments', ['id' => $comment->id]);
+        $response->assertSessionMissing('success');
+    }
+
+    public function test_guest_cannot_delete_comment()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comment = Comment::factory()->create(['post_id' => $post->id, 'user_id' => $user->id]);
+        $response = $this->delete(route('comments.comment_destroy', $comment));
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('comments', ['id' => $comment->id]);
+        $response->assertSessionMissing('success');
+    }
+
+
+
+    public function test_admin_show_post_reports()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $postreports = PostReport::factory()->count(5)->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        
+        $response = $this->actingAs($admin)->get(route('admin.reported_posts', ['user' => $user, 'post' => $post,'postreports' => $postreports]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('user', $user);
+        $response->assertViewHas('post', $post);
+        $response->assertViewHas('postreports', $postreports);
+    }
+
+    public function test_admin_show_comment_reports()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comment = Comment::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        $comments = Comment::factory()->count(5)->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        $commentreports = CommentReport::factory()->count(5)->create(['user_id' => $user->id,'comment_id' => $comment->id]);
+        
+        $response = $this->actingAs($admin)->get(route('admin.reported_comments', ['user' => $user,'post' => $comment->post_id,'target_comment' => $comment,'comments' => $comments,'commentreports' => $commentreports]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('user', $user);
+        $response->assertViewHas('post', $post);
+        $response->assertViewHas('target_comment', $comment);
+        $response->assertViewHas('comments', $comments);
+        $response->assertViewHas('commentreports', $commentreports);
+    }
+
+
+
+    public function test_show_post_reports_for_regular_user()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $postReports = PostReport::factory()->count(5)->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        
+        $response = $this->actingAs($user)->get(route('admin.reported_posts', ['user' => $user, 'post' => $post]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($postReports->first()->post_report_text);
+    }
+
+    public function test_show_comment_reports_for_regular_user()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comment = Comment::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        $commentReports = CommentReport::factory()->count(5)->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
+        
+        $response = $this->actingAs($user)->get(route('admin.reported_comments', ['user' => $user, 'comment' => $comment]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($commentReports->first()->comment_report_text);
+    }
+
+    public function test_show_post_reports_for_guest()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $postReports = PostReport::factory()->count(5)->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        
+        $response = $this->get(route('admin.reported_posts', ['user' => $post->user, 'post' => $post]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($postReports->first()->comment_report_text);
+    }
+
+    public function test_show_comment_reports_for_guest()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comment = Comment::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        $commentReports = CommentReport::factory()->count(5)->create(['user_id' => $user->id, 'comment_id' => $comment->id]);
+        
+        $response = $this->get(route('admin.reported_comments', ['user' => $post->user, 'comment' => $comment]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($commentReports->first()->comment_report_text);
+    }
+
+
+
+    public function test_show_user_reported_posts_for_regular_user()
+    {
+        $user = User::factory()->create();
+        $posts = Post::factory()->count(5)->create(['user_id' => $user->id, 'post_reports' => 1]);
+        
+        $response = $this->actingAs($user)->get(route('admin.reported_posts', ['user' => $user]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($posts->first()->text);
+    }
+
+    public function test_show_user_reported_comments_for_regular_user()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comments = Comment::factory()->count(5)->create(['user_id' => $user->id, 'post_id' => $post->id, 'comment_reports' => 1]);
+        
+        $response = $this->actingAs($user)->get(route('admin.reported_comments', ['user' => $user]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($comments->first()->comment_text);
+    }
+
+    public function test_show_user_reported_posts_for_guest()
+    {
+        $user = User::factory()->create();
+        $posts = Post::factory()->count(5)->create(['user_id' => $user->id, 'post_reports' => 1]);
+        
+        $response = $this->get(route('admin.reported_posts', ['user' => $user]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($posts->first()->text);
+    }
+
+    public function test_show_user_reported_comments_for_guest()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comments = Comment::factory()->count(5)->create(['user_id' => $user->id, 'post_id' => $post->id, 'comment_reports' => 1]);
+        
+        $response = $this->get(route('admin.reported_comments', ['user' => $user]));
+
+        $response->assertStatus(403);
+        $response->assertDontSeeText($comments->first()->comment_text);
+    }
+
+
+    public function test_all_posts_reported()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $posts = Post::factory()->count(5)->create(['post_reports' => 1]);
+
+        $response = $this->actingAs($admin)->get(route('posts_reported',['posts' => $posts]));
+
+        $response->assertStatus(200);
+        foreach ($posts as $post) {
+            $response->assertSeeText($post->text);
+        }
+    }
+
+    public function test_all_comments_reported()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comments = Comment::factory()->count(5)->create(['user_id' => $admin->id, 'post_id' => $post->id,'comment_reports' => 1]);
+
+        $response = $this->actingAs($admin)->get(route('comments_reported',['comments' => $comments]));
+
+        $response->assertStatus(200);
+        foreach ($comments as $comment) {
+            $response->assertSeeText($comment->comment_text);
+        }
+    }
+
+    public function test_admin_can_access_all_posts_reported()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $this->actingAs($admin);
+        $posts = Post::factory()->count(5)->create(['user_id' => $admin->id]);
+
+        $response = $this->get(route('posts_reported',['posts' => $posts]));
+
+        $response->assertStatus(200);
+        foreach ($posts as $post) {
+            $response->assertSeeText($post->post_text);
+        }
+    }
+
+    public function test_non_admin_cannot_access_all_posts_reported()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+        $posts = Post::factory()->count(5)->create(['user_id' => $user->id]);
+        $response = $this->get(route('posts_reported',['posts' => $posts]));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_can_access_all_comments_reported()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comments = Comment::factory()->count(5)->create(['user_id' => $admin->id, 'post_id' => $post->id]);
+        $this->actingAs($admin);
+
+        $response = $this->get(route('comments_reported',['comments' => $comments]));
+
+        $response->assertStatus(200);
+        foreach ($comments as $comment) {
+            $response->assertSeeText($comment->comment_text);
+        }
+    }
+
+    public function test_non_admin_cannot_access_all_comments_reported()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comments = Comment::factory()->count(5)->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        $this->actingAs($user);
+
+
+        $response = $this->get(route('comments_reported',['comments' => $comments]));
+
+        $response->assertStatus(403);
+    }
+
+
+    public function test_admin_can_access_reported_posts()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $this->actingAs($admin);
+
+        $response = $this->get(route('admin.reported_posts', ['user' => $admin, 'post_id' => $post->id]));
+
+        $response->assertStatus(200);
+    }
+
+    public function test_guest_cannot_access_reported_posts()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $response = $this->get(route('admin.reported_posts', ['user' => $user, 'post_id' => $post->id]));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_can_access_reported_comments()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $post = Post::factory()->create(['user_id' => $admin->id]);
+        $comment = Comment::factory()->create(['user_id' => $admin->id, 'post_id' => $post->id]);
+
+        $this->actingAs($admin);
+        $response = $this->get(route('admin.reported_comments', ['user' => $admin, 'comment_id' => $comment->id]));
+
+        $response->assertStatus(200);
+    }
+
+    public function test_guest_cannot_access_reported_comments()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->id]);
+        $comment = Comment::factory()->create(['user_id' => $user->id, 'post_id' => $post->id]);
+        $response = $this->get(route('admin.reported_comments', ['user' => $user, 'comment_id' => $comment->id]));
+
+        $response->assertStatus(403);
+    }
+
+
+
+
+
 
 
 }

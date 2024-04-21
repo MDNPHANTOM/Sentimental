@@ -45,7 +45,7 @@
                 class="main-comment"/></a>
             <a href="{{ route('posts.report', $post->id) }}"><img
                 alt="flag12017"
-                src="/flag12017-9i3-200w.png"
+                src="{{ asset('images/flag.png') }}"
                 class="main-image544983200"/></a>
         </div>
         </div>

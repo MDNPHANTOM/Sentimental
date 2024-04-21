@@ -34,7 +34,7 @@
         <div class="main-info">
             <div class="main-frame427320725">
                 <div class="main-post-info">
-                    <span class="main-text">{{ $post->user->name }}</span>
+                    <a href="{{ route('admin.reported_posts', $post->user_id) }}" class="main-text">{{ $post->user->name }}</a>
                     <span class="main-text02">---</span>
                     <span class="main-text04">{{$post->created_at->format('Y-m-d H:i:s')}}</span>
                     @if (Auth::user()->isAdmin == 1)
@@ -52,15 +52,55 @@
                     <span class="main-text04">Reports: {{$post->post_reports}}</span>
                     @if($post->post_reports > 0)
                         <div class="rem-element">
-                            <a href="{{ route('reports.post_report', [$post->user_id, $post->id]) }}">
+                            <a href="{{ route('reports.post_report', [$post->user_id, $post->id]) }}?{{ time() }}">
                                 <button type="button">Show Post Reports</button>
                             </a>
                         </div>
                     @endif
-                </div>               
+                </div>           
+                <div class="main-frame427320700">
+                    <div class="main-post-info1">
+                        <span class="main-text04">OVERALL EVAL:</span>
+                        <span class="main-text04">Compound: {{$post->compound}}</span>
+                        <span class="main-text04">Neutral: {{$post->neutral}}</span>
+                        <span class="main-text04">Positive: {{$post->positive}}</span>
+                        <span class="main-text04">Negative: {{$post->negative}}</span>
+                        <span></span>
+                    </div>
+                    <div class="main-post-info1">
+                        <span class="main-text04">NEGATIVE EMOTION:</span>
+                        <span class="main-text04">Fear: {{$post->fear}}</span>
+                        <span class="main-text04">Anger: {{$post->anger}}</span>
+                        <span class="main-text04">Sadness: {{$post->sadness}}</span>
+                        <span class="main-text04">Disgust: {{$post->disgust}}</span>
+                        <span></span>
+                    </div>
+                    <div class="main-post-info1">
+                        <span class="main-text04">POSITIVE EMOTION:</span>
+                        <span class="main-text04">Joy: {{$post->joy}}</span>
+                        <span class="main-text04">Trust: {{$post->trust}}</span>
+                        <span class="main-text04">Surprise: {{$post->surprise}}</span>
+                        <span class="main-text04">Anticipation: {{$post->anticipation}}</span>
+                        <span></span>
+                    </div>
+                </div>
                 <span class="main-text06">{{ $post->text }}</span>
             </div>
             <div class="main-react">
+                <form id="likeForm" action="{{ $post->likedBy(auth()->user()) ? route('posts.unlike', $post) : route('posts.like', $post) }}" method="POST">
+                    @csrf
+                    @if($post->likedBy(auth()->user()))
+                        @method('DELETE')
+                    @endif
+                    <button type="submit" style="background: none; border: none;">
+                        <img
+                            alt="likebutton161993113866172014"
+                            src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/7174dfe3-8544-4c6c-875e-d0aec2ab361e?org_if_sml=15703&amp;force_format=original"
+                            class="main-likebutton16199311386617"
+                        />
+                        <span>{{ $post->likes()->count() }}</span>
+                    </button>
+                </form>
                 <a href="{{ route('posts.show', $post->id) }}" role="link">
                 <img
                     alt="comment2014"
@@ -69,7 +109,7 @@
                 /></a>
                 <a href="{{ route('posts.report', $post->id) }}"><img
                     alt="flag12017"
-                    src="/flag12017-9i3-200w.png"
+                    src="{{ asset('images/flag.png') }}"
                     class="main-image544983200"/></a>
             </div>
         </div>
@@ -78,13 +118,17 @@
                 <span>Comments around the Reported Comment</span>
                 @foreach ($comments as $comment)
                     @if( $comment == $target_comment)
-                        <div class="main-info4">
+                        @if($commentreports->isEmpty())
+                            <div class="main-info">
+                        @else
+                            <div class="main-info4">
+                        @endif  
                     @else
                         <div class="main-info">
                     @endif          
                         <div class="main-frame427320725">
                             <div class="main-post-info">
-                                <span class="main-text">{{ $comment->user->name }}</span>
+                                <a href="{{ route('admin.reported_comments', $comment->user_id) }}" class="main-text">{{ $comment->user->name }}</a>
                                 <span class="main-text02">---</span>
                                 <span class="main-text04">{{$comment->created_at->format('Y-m-d H:i:s')}}</span>
                                 @if (Auth::user()->isAdmin == 1)
@@ -102,11 +146,37 @@
                                 <span class="main-text04">Reports: {{$comment->comment_reports}}</span>
                                 @if($comment->comment_reports > 0)
                                     <div class="rem-element">
-                                        <a href="{{ route('reports.comment_report', [$comment->user_id, $comment->id]) }}">
+                                        <a href="{{ route('reports.comment_report', [$comment->user_id, $comment->id]) }}?{{ time() }}">
                                             <button type="button">Show Comment Reports</button>
                                         </a>
                                     </div>
                                 @endif
+                            </div>
+                            <div class="main-frame427320700">
+                                <div class="main-post-info1">
+                                    <span class="main-text04">OVERALL EVAL:</span>
+                                    <span class="main-text04">Compound: {{$comment->compound}}</span>
+                                    <span class="main-text04">Neutral: {{$comment->neutral}}</span>
+                                    <span class="main-text04">Positive: {{$comment->positive}}</span>
+                                    <span class="main-text04">Negative: {{$comment->negative}}</span>
+                                    <span></span>
+                                </div>
+                                <div class="main-post-info1">
+                                    <span class="main-text04">NEGATIVE EMOTION:</span>
+                                    <span class="main-text04">Fear: {{$comment->fear}}</span>
+                                    <span class="main-text04">Anger: {{$comment->anger}}</span>
+                                    <span class="main-text04">Sadness: {{$comment->sadness}}</span>
+                                    <span class="main-text04">Disgust: {{$comment->disgust}}</span>
+                                    <span></span>
+                                </div>
+                                <div class="main-post-info1">
+                                    <span class="main-text04">POSITIVE EMOTION:</span>
+                                    <span class="main-text04">Joy: {{$comment->joy}}</span>
+                                    <span class="main-text04">Trust: {{$comment->trust}}</span>
+                                    <span class="main-text04">Surprise: {{$comment->surprise}}</span>
+                                    <span class="main-text04">Anticipation: {{$comment->anticipation}}</span>
+                                    <span></span>
+                                </div>
                             </div>
                             <span class="main-text06">{{ $comment->comment_text }}</span>
                         </div>
@@ -117,16 +187,9 @@
                                 src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/e8d7d336-b592-43ee-941a-5fdcd5a782e0?org_if_sml=1589&amp;force_format=original"
                                 class="main-comment"
                             /></a>
-                            <a>
-                            <img
-                                alt="save12015"
-                                src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/468f9d8e-41ac-479b-bd56-c5ebe3902f6a?org_if_sml=11373&amp;force_format=original"
-                                class="main-save1"
-                            /></a>
-
                             <a href="{{ route('comments.report', $comment->id) }}"><img
                                 alt="flag12017"
-                                src="/flag12017-9i3-200w.png"
+                                src="{{ asset('images/flag.png') }}"
                                 class="main-image544983200"/></a>
                         </div>
                     </div>
@@ -139,11 +202,15 @@
         </div>
     </div>
     <div class="main-report_post1" >
+    @if($commentreports->isEmpty())
+        <div class="main-info">
+    @else
         <div class="main-info4">
+    @endif     
             <div class="main-frame427320725">
                 <span>Reported Comment</span>
                 <div class="main-post-info">
-                    <span class="main-text">{{ $target_comment->user->name }}</span>
+                    <a href="{{ route('admin.reported_comments', $comment->user_id) }}" class="main-text">{{ $target_comment->user->name }}</a>
                     <span class="main-text02">---</span>
                     <span class="main-text04">{{$target_comment->created_at->format('Y-m-d H:i:s')}}</span>
                     @if (Auth::user()->isAdmin == 1)
@@ -161,12 +228,38 @@
                     <span class="main-text04">Reports: {{$target_comment->comment_reports}}</span>
                     @if($target_comment->comment_reports > 0)
                         <div class="rem-element">
-                            <a href="{{ route('reports.comment_report', [$comment->user_id, $target_comment->id]) }}">
+                            <a href="{{ route('reports.comment_report', [$comment->user_id, $target_comment->id]) }}?{{ time() }}">
                                 <button type="button">Show Comment Reports</button>
                             </a>
                         </div>
                     @endif
-                </div>               
+                </div> 
+                <div class="main-frame427320700">
+                    <div class="main-post-info1">
+                        <span class="main-text04">OVERALL EVAL:</span>
+                        <span class="main-text04">Compound: {{$target_comment->compound}}</span>
+                        <span class="main-text04">Neutral: {{$target_comment->neutral}}</span>
+                        <span class="main-text04">Positive: {{$target_comment->positive}}</span>
+                        <span class="main-text04">Negative: {{$target_comment->negative}}</span>
+                        <span></span>
+                    </div>
+                    <div class="main-post-info1">
+                        <span class="main-text04">NEGATIVE EMOTION:</span>
+                        <span class="main-text04">Fear: {{$target_comment->fear}}</span>
+                        <span class="main-text04">Anger: {{$target_comment->anger}}</span>
+                        <span class="main-text04">Sadness: {{$target_comment->sadness}}</span>
+                        <span class="main-text04">Disgust: {{$target_comment->disgust}}</span>
+                        <span></span>
+                    </div>
+                    <div class="main-post-info1">
+                        <span class="main-text04">POSITIVE EMOTION:</span>
+                        <span class="main-text04">Joy: {{$target_comment->joy}}</span>
+                        <span class="main-text04">Trust: {{$target_comment->trust}}</span>
+                        <span class="main-text04">Surprise: {{$target_comment->surprise}}</span>
+                        <span class="main-text04">Anticipation: {{$target_comment->anticipation}}</span>
+                        <span></span>
+                    </div>
+                </div>              
                 <span class="main-text06">{{ $target_comment->comment_text }}</span>
             </div>
             <div class="main-react">
@@ -176,16 +269,9 @@
                     src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/e8d7d336-b592-43ee-941a-5fdcd5a782e0?org_if_sml=1589&amp;force_format=original"
                     class="main-comment"
                 /></a>
-                <a>
-                <img
-                    alt="save12015"
-                    src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/437f2a70-6680-454b-9a7f-6e8fcfee7ba1/468f9d8e-41ac-479b-bd56-c5ebe3902f6a?org_if_sml=11373&amp;force_format=original"
-                    class="main-save1"
-                /></a>
-
                 <a href="{{ route('comments.report', $target_comment->id) }}"><img
                     alt="flag12017"
-                    src="/flag12017-9i3-200w.png"
+                    src="{{ asset('images/flag.png') }}"
                     class="main-image544983200"/></a>
             </div>
         </div>
@@ -195,12 +281,12 @@
                 <div class="main-info">
                     <div class="main-frame427320725">
                         <div class="main-post-info">
-                            <span class="main-text">{{ $commentreport->user->name }}</span>
+                            <a href="{{ route('admin.reported_comments', $commentreport->user_id) }}" class="main-text">{{ $commentreport->user->name }}</a>
                             <span class="main-text02">---</span>
                             <span class="main-text04">{{$commentreport->created_at->format('Y-m-d H:i:s')}}</span>
                             @if (Auth::user()->isAdmin == 1)
                             <div class="rem-element">
-                                <form action="{{ route('reports.delete_comment_report', ['report' => $commentreport->id]) }}" method="POST">
+                                <form action="{{ route('reports.delete_comment_report', ['report' => $commentreport->id]) }}?{{ time() }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit">Delete Report for Comment</button>

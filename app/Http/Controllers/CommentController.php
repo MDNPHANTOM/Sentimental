@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
 
 class CommentController extends Controller
 {
@@ -20,6 +22,29 @@ class CommentController extends Controller
             ]);
         }
 
+    public function sendJSONToDjango($message)
+    {
+        $jsonData = [
+            'message' => $message,
+        ];
+
+        $jsonString = json_encode($jsonData);
+
+        $response = Http::post('http://127.0.0.1:8000/api/detect-depression', [
+            'message' => $jsonString, // Send JSON data in the request body
+        ]);
+
+        if ($response->successful()) {
+            $responseData = $response->json();
+            return $responseData;
+        } else {
+            $errorCode = $response->status();
+            $errorMessage = $response->body();
+            return response()->json(['error' => $errorMessage], $errorCode);
+        }
+    
+    }
+
     public function store(Request $request,Post $post){
         $request->validate([
             'post_id' => 'required|exists:posts,id',
@@ -29,7 +54,22 @@ class CommentController extends Controller
         $comment->user_id = Auth()->user()->id;
         $comment->post_id = $request->input('post_id');
         $comment->comment_text = $request->comment_text;
-        $comment->concern = rand(0,1);
+
+        $responseData = $this->sendJSONToDjango($request->comment_text);
+        $comment->concern = $responseData['is_depressed'][0][0];
+        $comment->fear = $responseData['sentiment']['fear'][0];
+        $comment->anger = $responseData['sentiment']['anger'][0];
+        $comment->anticipation = $responseData['sentiment']['anticipation'][0];
+        $comment->trust = $responseData['sentiment']['trust'][0];
+        $comment->surprise = $responseData['sentiment']['surprise'][0];
+        $comment->positive = $responseData['sentiment']['positive'][0];
+        $comment->negative = $responseData['sentiment']['negative'][0];
+        $comment->sadness = $responseData['sentiment']['sadness'][0];
+        $comment->disgust = $responseData['sentiment']['disgust'][0];
+        $comment->joy = $responseData['sentiment']['joy'][0];
+        $comment->neutral = $responseData['sentiment']['neutral'][0];
+        $comment->compound = $responseData['sentiment']['compound'][0];
+
         $comment->save();
         $user = Auth()->user();
         if($comment->concern == 1)
@@ -72,7 +112,22 @@ class CommentController extends Controller
             $preconcern = $comment->concern;
             $comment->user_id = Auth()->user()->id;
             $comment->comment_text = $request->comment_text;
-            $comment->concern = rand(0,1);
+    
+            $responseData = $this->sendJSONToDjango($request->comment_text);
+            $comment->concern = $responseData['is_depressed'][0][0];
+            $comment->fear = $responseData['sentiment']['fear'][0];
+            $comment->anger = $responseData['sentiment']['anger'][0];
+            $comment->anticipation = $responseData['sentiment']['anticipation'][0];
+            $comment->trust = $responseData['sentiment']['trust'][0];
+            $comment->surprise = $responseData['sentiment']['surprise'][0];
+            $comment->positive = $responseData['sentiment']['positive'][0];
+            $comment->negative = $responseData['sentiment']['negative'][0];
+            $comment->sadness = $responseData['sentiment']['sadness'][0];
+            $comment->disgust = $responseData['sentiment']['disgust'][0];
+            $comment->joy = $responseData['sentiment']['joy'][0];
+            $comment->neutral = $responseData['sentiment']['neutral'][0];
+            $comment->compound = $responseData['sentiment']['compound'][0];
+
             $comment->save();
 
             $user = Auth()->user();

@@ -29,21 +29,21 @@ class AdminController extends Controller
 
      public function comments_flagged()
      {
-        $comments = Comment::where('concern', 1)->orderBy('created_at', 'desc')->paginate(20);
+        $comments = Comment::where('concern', 1)->orderBy('concern_score', 'desc')->paginate(20);
 
         return view('warnings.flaggedComments', ['comments' => $comments]);
      }
 
      public function show_user_flagged_posts(Request $request, User $user)
      {
-        $posts = Post::where('concern', 1)->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(20);
+        $posts = Post::where('concern', 1)->where('user_id', $user->id)->orderBy('concern_score', 'desc')->paginate(20);
 
         return view('admin.flagged_posts', ['user' => $user,'posts' => $posts]);
 
      }
      public function show_user_flagged_comments(Request $request, User $user){
 
-        $comments = Comment::where('concern', 1)->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(20);
+        $comments = Comment::where('concern', 1)->where('user_id', $user->id)->orderBy('concern_score', 'desc')->paginate(20);
 
         return view('admin.flagged_comments', ['user' => $user,'comments' => $comments]);
 

@@ -17,7 +17,19 @@ class AdminControllerTest extends TestCase
     use RefreshDatabase;
     use WithFaker;
 
-
+    /** @test */
+    public function it_can_block_a_user()
+    {
+        $admin = User::factory()->create(['isAdmin' => 1]);
+        $user = User::factory()->create(['blocked' => 0]);
+    
+        $response = $this->actingAs($admin)->post(route('admin.block_user', $user));
+        $user->refresh();
+        $response->assertStatus(405);
+        $this->assertEquals(0, $user->blocked);
+        
+    }
+    
 
 
 }

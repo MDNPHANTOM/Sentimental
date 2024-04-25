@@ -34,15 +34,20 @@ class PostSeeder extends Seeder
             $post->joy = $responseData['sentiment']['joy'][0];
             $post->neutral = $responseData['sentiment']['neutral'][0];
             $post->compound = $responseData['sentiment']['compound'][0];
-
+            $post->concern_score = $post->concern + ($post->compound * -1);
             $post->save();
-
+            $user = User::find($post->user_id);
             if ($post->concern == 1) {
                 // Get the user associated with this post and update their concerns count
-                $user = User::find($post->user_id);
                 $user->concerns = $user->concerns += 1;
-                $user->save();
             }
+            if ($post->concern_score >= 1) {
+                $user->score_neg +=  $post->concern_score;
+            } else {
+                $user->score_pos +=  (($post->concern_score-1)*-1);
+            }
+            $user->save();
+
         }
     }
 

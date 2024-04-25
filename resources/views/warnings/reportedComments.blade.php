@@ -24,6 +24,7 @@
                             @endif
                         </div>
                         <div class="main-post-info">
+                            <span class="main-text04">Concern Score: {{$comment->concern_score}}</span>
                             <span class="main-text04">Concern: {{$comment->concern}}</span>
                             <span class="main-text04">Reports: {{$comment->comment_reports}}</span>
                             @if($comment->comment_reports > 0)

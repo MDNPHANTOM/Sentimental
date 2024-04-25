@@ -96,12 +96,18 @@ class PostController extends Controller
         $post->joy = $responseData['sentiment']['joy'][0];
         $post->neutral = $responseData['sentiment']['neutral'][0];
         $post->compound = $responseData['sentiment']['compound'][0];
+        $post->concern_score = $post->concern + ($post->compound * -1);
 
         $post->created_at = now();
         $post->updated_at = now();
         $user = Auth()->user();
         if ($post->concern == 1) {
             $user->concerns = $user->concerns += 1;     
+        }
+        if ($post->concern_score > 0) {
+            $user->score_neg +=  $post->concern_score;
+        } else {
+            $user->score_pos +=  (($post->concern_score-1)*-1);
         }
         $user->save();
         $post->save();
@@ -113,6 +119,7 @@ class PostController extends Controller
             $request->validate([
                 'text' => 'required|max:1000']);
 
+            $prescore = $post->concern_score;
             $preconcern = $post->concern;
             $post->user_id = Auth()->user()->id;
             $post->text = $request->text;
@@ -131,6 +138,7 @@ class PostController extends Controller
             $post->joy = $responseData['sentiment']['joy'][0];
             $post->neutral = $responseData['sentiment']['neutral'][0];
             $post->compound = $responseData['sentiment']['compound'][0];
+            $post->concern_score = $post->concern + ($post->compound * -1);
 
             $post->updated_at = now();
             $user = User::find($post->user_id);
@@ -140,6 +148,13 @@ class PostController extends Controller
                 $user->concerns = $user->concerns -= 1;} 
             else{
                 $user->concerns + 0;
+            }
+            if ($post->concern_score >= 0) {
+                $user->score_neg -=  $prescore;
+                $user->score_neg +=  $post->concern_score;
+            } else {
+                $user->score_pos -=  (($prescore-1)*-1);
+                $user->score_pos +=  (($post->concern_score-1)*-1);
             }
             $user->save();
             $post->save();
@@ -161,6 +176,12 @@ class PostController extends Controller
                 if($post->concern == 1 && $user->concerns > 0){
                     $user->concerns = $user->concerns -= 1;
                 }
+                if ($post->concern_score >= 0 &&  ($user->score_neg - $post->concern_score > 0) ) {
+                    $user->score_neg -=  $post->concern_score;
+                } 
+                if($post->concern_score < 0  &&  ($user->score_pos - $post->concern_score > 0)) {
+                    $user->score_pos -=  (($post->concern_score-1)*-1);
+                }
                 $user->reported -= $post->post_reports;
                 $post->delete();
                 $user->save();
@@ -170,6 +191,12 @@ class PostController extends Controller
                 $user = Auth()->user();
                 if($post->concern == 1 && $user->concerns > 0){
                     $user->concerns = $user->concerns -= 1;
+                }
+                if ($post->concern_score >= 0 &&  ($user->score_neg - $post->concern_score > 0) ) {
+                    $user->score_neg -=  $post->concern_score;
+                } 
+                if($post->concern_score < 0  &&  ($user->score_pos - $post->concern_score > 0)) {
+                    $user->score_pos -=  (($post->concern_score-1)*-1);
                 }
                 $user->reported -= $post->post_reports;
                 $post->delete();

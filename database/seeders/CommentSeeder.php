@@ -36,17 +36,20 @@ class CommentSeeder extends Seeder
             $comment->joy = $responseData['sentiment']['joy'][0];
             $comment->neutral = $responseData['sentiment']['neutral'][0];
             $comment->compound = $responseData['sentiment']['compound'][0];
-
+            $comment->concern_score = $comment->concern + ($comment->compound * -1);
             $comment->save();
 
+            $user = User::find($comment->user_id);
             if ($comment->concern == 1) {
-                $user = User::find($comment->user_id);
                 $user->concerns = $user->concerns += 1;
-                $user->save();
             }
 
-
-
+            if ($comment->concern_score >= 1) {
+                $user->score_neg +=  $comment->concern_score;
+            } else {
+                $user->score_pos +=  (($comment->concern_score-1)*-1);
+            }
+            $user->save();
             
         }
 

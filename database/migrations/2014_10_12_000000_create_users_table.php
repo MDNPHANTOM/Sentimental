@@ -20,6 +20,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->unsignedInteger('isAdmin')->default(0);
             $table->unsignedInteger('concerns')->default(0);
+            $table->float('score_pos')->default(0);
+            $table->float('score_neg')->default(0);
             $table->unsignedInteger('reported')->default(0);
             $table->unsignedInteger('support_tier')->default(0);
             $table->unsignedInteger('blocked')->default(0);

@@ -25,6 +25,7 @@
                             @endif
                         </div>
                         <div class="main-post-info">
+                            <span class="main-text04">Concern Score: {{$post->concern_score}}</span>
                             <span class="main-text04">Concern: {{$post->concern}}</span>
                             <span class="main-text04">Reports: {{$post->post_reports}}</span>
                         </div>

@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->unsignedInteger('concern')->default(0);
+            $table->float('concern_score')->default(0); 
             $table->unsignedInteger('comment_reports')->default(0);
             $table->string('comment_text');
             $table->float('fear')->default(0); 

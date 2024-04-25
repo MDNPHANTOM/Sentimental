@@ -9,10 +9,11 @@ use App\Models\Post;
 class PostLikeController extends Controller
 {
     public function show_liked_posts(){
-
-        $liker = auth()->user();
-        $liker->likes();
-        $posts =  $liker->likes()->orderBy('created_at', 'desc');
+        $blocked_users = User::where('blocked', 1)->pluck('id');
+        $posts = Post::orderBy('created_at', 'desc')->where(function ($query) use ($blocked_users) {
+            $query->whereNotIn('user_id', $blocked_users)
+                ->orWhere('user_id', Auth()->user()->id);
+                })->orderBy('created_at', 'desc')->paginate(20);
         return view('users.liked', compact('posts'));
     }
 

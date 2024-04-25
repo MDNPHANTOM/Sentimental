@@ -13,8 +13,14 @@
                     <a href="{{ route('admin.flagged_posts', $user->id) }}"><button>Show User Flags</button></a>
                 </div>
             </div>   
-            <span class="main-text04">Flaged: {{ $user->concerns }} </span> 
-            <span class="main-text04">Reported: {{ $user->reported }} </span>
+            <div class="main-post-info">
+                <span class="main-text04">Flaged: {{ $user->concerns }} </span> 
+                <span class="main-text04">Reported: {{ $user->reported }} </span>
+            </div>
+            <div class="main-post-info">
+                <span class="main-text04">Total Negative: {{ $user->score_neg  }} </span>
+                <span class="main-text04">Total Positive: {{ $user->score_pos }} </span> 
+            </div>
             <form class="main-post-info" action="{{ route('admin.set_user_support', $user->id) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -52,6 +58,7 @@
                             @endif
                         </div>
                         <div class="main-post-info">
+                            <span class="main-text04">Concern Score: {{$post->concern_score}}</span>
                             <span class="main-text04">Concern: {{$post->concern}}</span>
                             <span class="main-text04">Reports: {{$post->post_reports}}</span>
                         </div>

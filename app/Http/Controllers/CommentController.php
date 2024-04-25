@@ -69,12 +69,18 @@ class CommentController extends Controller
         $comment->joy = $responseData['sentiment']['joy'][0];
         $comment->neutral = $responseData['sentiment']['neutral'][0];
         $comment->compound = $responseData['sentiment']['compound'][0];
+        $comment->concern_score = $comment->concern + ($comment->compound * -1);
 
         $comment->save();
         $user = Auth()->user();
         if($comment->concern == 1)
             $user->concerns += 1;
-            $user->save();
+        if ($comment->concern_score >= 0) {
+            $user->score_neg +=  $comment->concern_score;
+        } else {
+            $user->score_pos +=  (($comment->concern_score-1)*-1);
+        }
+        $user->save();
         return redirect()->back()->with('success', 'New Comment Added.');
 
     }
@@ -110,6 +116,7 @@ class CommentController extends Controller
                 'comment_text' => 'required|max:1000']);
 
             $preconcern = $comment->concern;
+            $prescore = $comment->concern_score;
             $comment->user_id = Auth()->user()->id;
             $comment->comment_text = $request->comment_text;
     
@@ -127,6 +134,7 @@ class CommentController extends Controller
             $comment->joy = $responseData['sentiment']['joy'][0];
             $comment->neutral = $responseData['sentiment']['neutral'][0];
             $comment->compound = $responseData['sentiment']['compound'][0];
+            $comment->concern_score = $comment->concern + ($comment->compound * -1);
 
             $comment->save();
 
@@ -137,6 +145,13 @@ class CommentController extends Controller
                 $user->concerns = $user->concerns -= 1;
             } else{
                 $user->concerns + 0;
+            } 
+            if ($comment->concern_score >= 0) {
+                $user->score_neg -=  $prescore;
+                $user->score_neg +=  $comment->concern_score;
+            } else {
+                $user->score_neg -=  (($prescore-1)*-1);
+                $user->score_pos +=  (($comment->concern_score-1)*-1);
             }
             $user->save();
             return redirect()->route('posts.show', $comment->post_id)->with('success', 'Update Successfull');
@@ -155,6 +170,12 @@ class CommentController extends Controller
                 if($comment->concern == 1 && $user->concerns > 0){
                     $user->concerns = $user->concerns -= 1;
                 }
+                if ($comment->concern_score >= 0 &&  ($user->score_neg - $comment->concern_score > 0) ) {
+                    $user->score_neg -=  $comment->concern_score;
+                } 
+                if($comment->concern_score < 0  &&  ($user->score_pos - $comment->concern_score > 0)) {
+                    $user->score_pos -=  (($comment->concern_score-1)*-1);
+                }
                 $user->reported -= $comment->comment_reports;
                 $comment->delete();
                 $user->save();
@@ -164,6 +185,12 @@ class CommentController extends Controller
                 $user = Auth()->user();
                 if($comment->concern == 1 && $user->concerns > 0){
                     $user->concerns = $user->concerns -= 1;
+                }
+                if ($comment->concern_score >= 0 &&  ($user->score_neg - $comment->concern_score > 0) ) {
+                    $user->score_neg -=  $comment->concern_score;
+                } 
+                if($comment->concern_score < 0  &&  ($user->score_pos - $comment->concern_score > 0)) {
+                    $user->score_pos -=  (($comment->concern_score-1)*-1);
                 }
                 $user->reported -= $comment->comment_reports;
                 $comment->delete();

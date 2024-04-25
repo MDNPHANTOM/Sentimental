@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedInteger('likes')->default(0);
             $table->unsignedInteger('post_reports')->default(0);
             $table->unsignedInteger('concern')->default(0);
+            $table->float('concern_score')->default(0); 
             $table->float('fear')->default(0); 
             $table->float('anger')->default(0); 
             $table->float('anticipation')->default(0); 

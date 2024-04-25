@@ -29,23 +29,23 @@ class ReportController extends Controller
 
         
     public function posts_reported(){
-        $posts = Post::where('post_reports', '>', 0)->orderBy('created_at', 'desc')->paginate(20);
+        $posts = Post::where('post_reports', '>', 0)->orderBy('concern_score', 'desc')->paginate(20);
         return view('warnings.reportedPosts', ['posts' => $posts]);
     }
     
     public function comments_reported(){
-        $comments = Comment::where('comment_reports', '>', 0)->orderBy('created_at', 'desc')->paginate(20);
+        $comments = Comment::where('comment_reports', '>', 0)->orderBy('concern_score', 'desc')->paginate(20);
         return view('warnings.reportedComments', ['comments' => $comments]);
     }
 
     
     public function show_user_reported_posts(Request $request, User $user){
-        $posts = Post::where('post_reports', '>', 0)->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(20);
+        $posts = Post::where('post_reports', '>', 0)->where('user_id', $user->id)->orderBy('concern_score', 'desc')->paginate(20);
         return view('admin.reported_posts', ['user' => $user,'posts' => $posts]);
     }
 
     public function show_user_reported_comments(Request $request, User $user){
-        $comments = Comment::where('comment_reports', '>', 0)->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(20);
+        $comments = Comment::where('comment_reports', '>', 0)->where('user_id', $user->id)->orderBy('concern_score', 'desc')->paginate(20);
         return view('admin.reported_comments', ['user' => $user,'comments' => $comments]);
     }
 

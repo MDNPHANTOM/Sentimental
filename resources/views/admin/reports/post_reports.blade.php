@@ -38,15 +38,15 @@
         </div>
     </div>
     <div class="main-report_post1" >
-            @if($postreports->isEmpty())
-                <div class="main-info">
-            @else
-                <div class="main-info4">
-            @endif  
+    @if($postreports->isEmpty())
+        <div class="main-info">
+    @else
+        <div class="main-info4">
+    @endif  
             <div class="main-frame427320725">
                 <span>Reported Post</span>
                 <div class="main-post-info">
-                    <a href="{{ route('admin.reported_posts', $post->user_id) }}" class="main-text">{{ $post->user->name }}</span>
+                    <a href="{{ route('admin.reported_posts', $post->user_id) }}" class="main-text">{{ $post->user->name }}</a>
                     <span class="main-text02">---</span>
                     <span class="main-text04">{{$post->created_at->format('Y-m-d H:i:s')}}</span>
                     @if (Auth::user()->isAdmin == 1)
